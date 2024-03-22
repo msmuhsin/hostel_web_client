@@ -75,8 +75,8 @@
 
 1. *GET /scheme*
    - Description: Retrieve all schemes.
-   - Deadline: 22-03-23
-   - Assigned To: Ritha
+   - Deadline: [Deadline]
+   - Assigned To: [developer name]
 
 2. *GET /scheme/:id*
    - Description: Retrieve a specific scheme by ID.
