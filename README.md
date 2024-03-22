@@ -1,36 +1,108 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Project Documentation
 
-## Getting Started
+## Project Overview
+- *Project Name:* Hostel management API
+- *Description:* A RESTful API for managing hostel admission process.
 
-First, run the development server:
+## API Implementation
+- *Description:* This section outlines the API endpoints and functionality that need to be implemented for the Hostel management API.
+  
+### Endpoints to Implement
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+#### Middlewares (Utils) 
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. *JWT Middleware*
+   - Description: Middleware for verifying JWT tokens.
+   - Deadline: [Deadline]
+   - Assigned To:[Developer Name]
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+#### Authentication Endpoints
 
-## Learn More
+1. *POST /auth/register*
+   - Description: Register a new staff/admin.
+   - Deadline: [Deadline]
+   - Assigned To: [Developer Name]
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. *POST /auth/login*
+    - Description: Login a user.
+    - Deadline: [Deadline]
+    - Assigned To: [Developer Name]
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+3. *PATCH/update/password*
+    - Description: update user's password.
+    - Deadline: [Deadline]
+    - Assigned To: [Developer Name]
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+#### User Endpoints
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+1. *GET /user*
+   - Description: Retrieve all student details.
+   - Deadline: [Deadline]
+   - Assigned To: [Developer Name]
+
+
+2. *PATCH /user/:id*
+   - Description: Update student data specified by ID.
+   - Deadline: [Deadline]
+   - Assigned To: [Developer Name]
+
+
+3. *POST /user*
+   - Description: Create a new student.
+   - Deadline: [Deadline]
+   - Assigned To: [Developer Name]
+
+4. *POST /student/scorecalculator*
+   - Description:calculation of score of a student according to weightage
+   - Deadline: [Deadline]
+   - Assigned To:developer Name
+
+5. *POST /room/allocation*
+   - Description:calculate no of rooms as vacancies
+   - Deadline: [Deadline]
+   - Assigned To:developer Name
+
+6. *POST /room/allotment*
+   - Description:allotmet of a room
+   - Deadline: [Deadline]
+   - Assigned To:developer Name
+   
+
+#### Scheme Endpoints
+
+1. *GET /scheme*
+   - Description: Retrieve all schemes.
+   - Deadline: 22-03-23
+   - Assigned To: Ritha
+
+2. *GET /scheme/:id*
+   - Description: Retrieve a specific scheme by ID.
+   - Deadline: [Deadline]
+   - Assigned To: [Developer Name]
+
+3. *POST /scheme*
+   - Description: Create a new scheme.
+   - Deadline: [Deadline]
+   - Assigned To: [Developer Name]
+
+4. *PUT /scheme/:id*
+   - Description: Update a specific scheme by ID.
+   - Deadline: [Deadline]
+   - Assigned To: [Developer Name]
+
+
+5. *DELETE /scheme/:id*
+   - Description: Delete a specific scheme by ID.
+   - Deadline: [Deadline]
+   - Assigned To: [Developer Name]
+
+
+
+## Testing and Debugging
+- *Description:* This section outlines the testing and debugging phase of the project.
+
+### Testing Plan
+- *Unit Testing:* Test each API using Postman or Hoppscotch using dummy data.
