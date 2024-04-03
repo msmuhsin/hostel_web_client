@@ -4,8 +4,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { useFormik } from "formik";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import { cn } from "@/lib/utils";
+import { updateStudentData } from "@/lib/functions";
+import Success from "./Success";
 
 import {
   Popover,
@@ -22,13 +24,41 @@ import {
 } from "@/components/ui/select";
 
 const Applicationform = () => {
-  const options = [
-    { value: "SC", label: "SC" },
+  const [formSubmissionData, setFormSubmissionData] = React.useState({
+    status: "",
+    message: "",
+  });
+
+  const [formSuccessfullySubmitted, setFormSuccessfullySubmitted] =
+    React.useState(false);
+
+  const quotaoptions = [
+    { value: "SC-APL", label: "SC-APL" },
+    { value: "SC-BPL", label: "SC-BPL" },
     { value: "ST", label: "ST" },
     { value: "OBC", label: "OBC" },
     { value: "General", label: "General" },
   ];
 
+  const semoptions = [
+    { value: "S1", label: "S1" },
+    { value: "S3", label: "S3" },
+    { value: "S5", label: "S5" },
+    { value: "S7", label: "S7" },
+    { value: "S9", label: "S9" },
+    { value: "M1", label: "M1" },
+    { value: "M3", label: "M3" },
+  ];
+  const branchoptions = [
+    { value: "ME", label: "ME" },
+    { value: "CE", label: "CE" },
+    { value: "BA", label: "BA" },
+    { value: "CSE", label: "CSE" },
+    { value: "ECE", label: "ECE" },
+    { value: "EEE", label: "EEE" },
+    { value: "PE", label: "PE" },
+    { value: "CHE", label: "CHE" },
+  ];
   const CalendarIcon = ({ className }) => (
     <svg
       width="15"
@@ -82,414 +112,486 @@ const Applicationform = () => {
       PinCode: Yup.string()
         .required("Pincode is required")
         .matches(/^[1-9][0-9]{5}$/, "Invalid Pincode"),
-      Distance: Yup.string().required("Distance is required"),
+      Distance: Yup.string().required("Distance is required").min(0),
       Caste: Yup.string().required("Caste is required"),
       Quota: Yup.string().required("Quota is required"),
-      Income: Yup.string().required("Income is required"),
+      // cannot be negative
+      Income: Yup.string().required("Income is required").min(0),
       Branch: Yup.string().required("Branch is required"),
-      Sem: Yup.string().required("Semester is required"),
-      CGPA: Yup.string().required("CGPA is required"),
+      Sem: Yup.string().oneOf([
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5",
+        "S6",
+        "S7",
+        "S8",
+        "S9",
+        "S10",
+        "M1",
+        "M2",
+        "M3",
+        "M4",
+      ]),
+      CGPA: Yup.string().min(1).max(10).required("CGPA is required"),
     }),
-    onSubmit: (values, { setSubmitting }) => {
+    onSubmit: async (values, { setSubmitting }) => {
       alert(JSON.stringify(values, null, 2));
-      console.log(values);
+
+      const res = await updateStudentData(values);
+
+      console.log(res.data);
+
+      if (res.data.success) {
+        setFormSubmissionData({
+          status: "success",
+          message: "Your form has been successfully submitted",
+        });
+      } else {
+        setFormSubmissionData({
+          status: "Error",
+          message: res.data.message,
+        });
+      }
+
       setSubmitting(false);
+      setFormSuccessfullySubmitted(true);
     },
   });
 
   return (
-    <form
-      className="bg-white w-full md:w-1/2 rounded-md px-8 py-10 shadow-md flex flex-col space-y-4"
-      onSubmit={formik.handleSubmit}
-    >
-      <h2 className="text-xl font-semibold text-center mb-4">
-        Student Application Form
-      </h2>
-      <div className="flex flex-col space-y-1">
-        <label htmlFor="Admno" className="text-sm font-medium">
-          Admission No <span className="text-red-500">*</span>
-        </label>
-        <Input
-          type="text"
-          name="Admno"
-          className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter Admission Number"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.Admno}
-        />
-
-        {formik.touched.Admno && formik.errors.Admno && (
-          <div className="text-red-500 text-xs">{formik.errors.Admno}</div>
-        )}
-      </div>
-      <div className="flex flex-col space-y-1">
-        <label htmlFor="Regno" className="text-sm font-medium">
-          Registration No <span className="text-red-500">*</span>
-        </label>
-        <Input
-          type="text"
-          name="Regno"
-          className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter Registration Number"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.Regno}
-        />
-        {formik.touched.Regno && formik.errors.Regno && (
-          <div className="text-red-500 text-xs">{formik.errors.Regno}</div>
-        )}
-      </div>
-      <div className="flex flex-col space-y-1">
-        <label htmlFor="Name" className="text-sm font-medium">
-          Name <span className="text-red-500">*</span>
-        </label>
-        <Input
-          type="text"
-          name="Name"
-          className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter Name"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.Name}
-        />
-        {formik.touched.Name && formik.errors.Name && (
-          <div className="text-red-500 text-xs">{formik.errors.Name}</div>
-        )}
-      </div>
-      <div className="flex flex-col space-y-1">
-        <label htmlFor="Gender" className="text-sm font-medium">
-          Gender <span className="text-red-500">*</span>
-        </label>
-        <div
-          role="group"
-          aria-labelledby="my-radio-group"
-          className="flex items-center space-x-2"
-        >
-          <label className="text-sm">
-            <input
-              type="radio"
-              name="Gender"
-              value="male"
-              className="mr-1"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              checked={formik.values.Gender === "male"}
-            />
-            Male
-          </label>
-          <label className="text-sm">
-            <input
-              type="radio"
-              name="Gender"
-              value="female"
-              className="mr-1"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              checked={formik.values.Gender === "female"}
-            />
-            Female
-          </label>
-          <label className="text-sm">
-            <input
-              type="radio"
-              name="Gender"
-              value="other"
-              className="mr-1"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              checked={formik.values.Gender === "other"}
-            />
-            Other
-          </label>
+    <>
+      {formSuccessfullySubmitted ? (
+        <div className="bg-white w-full md:w-1/2 rounded-md px-8  my-auto flex flex-col">
+          <Success
+            Status={formSubmissionData.status}
+            Text={formSubmissionData.message}
+          />
         </div>
-        {formik.touched && formik.errors && (
-          <div className="text-red-500 text-xs">{formik.errors.Gender}</div>
-        )}
-      </div>
-      <div className="flex flex-col space-y-1">
-        <label htmlFor="DOB" className="text-sm font-medium">
-          Date of Birth <span className="text-red-500">*</span>
-        </label>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant={"outline"}
-              className={cn(
-                "w-[240px] pl-3 text-left font-normal border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 ",
-                formik.values.DOB ? "text-black" : "text-gray-500"
-              )}
-            >
-              {formik.values.DOB ? (
-                format(new Date(formik.values.DOB), "dd/MM/yyyy")
-              ) : (
-                <span>Pick a date</span>
-              )}
-              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              mode="single"
-              selected={formik.values.DOB ? new Date(formik.values.DOB) : null}
-              onSelect={(date) => {
-                formik.setFieldValue("DOB", date.toISOString());
-              }}
-              disabled={(date) =>
-                date > new Date() || date < new Date("1900-01-01")
-              }
-              defaultMonth={new Date(2000, 1)}
-              initialFocus
+      ) : (
+        <form
+          className="bg-white w-full md:w-1/2 rounded-md px-8 py-10 shadow-md flex flex-col space-y-4"
+          onSubmit={formik.handleSubmit}
+        >
+          <h2 className="text-xl font-semibold text-center mb-4">
+            Student Application Form
+          </h2>
+          <div className="flex flex-col space-y-1">
+            <label htmlFor="Admno" className="text-sm font-medium">
+              Admission No <span className="text-red-500">*</span>
+            </label>
+            <Input
+              type="text"
+              name="Admno"
+              className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter Admission Number"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.Admno}
             />
-          </PopoverContent>
-        </Popover>
 
-        {formik.touched.DOB &&
-          formik.errors.DOB && ( //?
-            <div className="text-red-500 text-xs">{formik.errors.DOB}</div>
-          )}
-      </div>
-      <div className="flex flex-col space-y-1">
-        <label htmlFor="Mobile" className="text-sm font-medium">
-          Mobile Number <span className="text-red-500">*</span>
-        </label>
-        <Input
-          type="number"
-          name="Mobile"
-          className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter Mobile Number"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.Mobile}
-        />
-        {formik.touched.Mobile && formik.errors.Mobile && (
-          <div className="text-red-500 text-xs">{formik.errors.Mobile}</div>
-        )}
-      </div>
-      <div className="flex flex-col space-y-1">
-        <label htmlFor="email" className="text-sm font-medium">
-          Email Address <span className="text-red-500">*</span>
-        </label>
-        <Input
-          type="email"
-          name="Email"
-          className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 "
-          placeholder="Enter Email Address"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.Email}
-        />
-        {formik.touched.Email && formik.errors.Email && (
-          <div className="text-red-500 text-xs">{formik.errors.Email}</div>
-        )}
-      </div>
-
-      <div className="flex flex-col space-y-1">
-        <label htmlFor="PermanentAddress" className="text-sm font-medium">
-          Permanent Address <span className="text-red-500">*</span>
-        </label>
-        <Input
-          type="text"
-          name="PermanentAddress"
-          className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter Permanent Address"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.PermanentAddress}
-        />
-        {formik.touched.PermanentAddress && formik.errors.PermanentAddress && (
-          <div className="text-red-500 text-xs">
-            {formik.errors.PermanentAddress}
+            {formik.touched.Admno && formik.errors.Admno && (
+              <div className="text-red-500 text-xs">{formik.errors.Admno}</div>
+            )}
           </div>
-        )}
-      </div>
-
-      <div className="flex flex-col space-y-1">
-        <label htmlFor="PresentAddress" className="text-sm font-medium">
-          Present Address <span className="text-red-500">*</span>
-        </label>
-        <Input
-          type="text"
-          name="PresentAddress"
-          className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter Present Address"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.PresentAddress}
-        />
-        {formik.touched.PresentAddress && formik.errors.PresentAddress && (
-          <div className="text-red-500 text-xs">
-            {formik.errors.PresentAddress}
+          <div className="flex flex-col space-y-1">
+            <label htmlFor="Regno" className="text-sm font-medium">
+              Registration No <span className="text-red-500">*</span>
+            </label>
+            <Input
+              type="text"
+              name="Regno"
+              className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter Registration Number"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.Regno}
+            />
+            {formik.touched.Regno && formik.errors.Regno && (
+              <div className="text-red-500 text-xs">{formik.errors.Regno}</div>
+            )}
           </div>
-        )}
-      </div>
+          <div className="flex flex-col space-y-1">
+            <label htmlFor="Name" className="text-sm font-medium">
+              Name <span className="text-red-500">*</span>
+            </label>
+            <Input
+              type="text"
+              name="Name"
+              className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter Name"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.Name}
+            />
+            {formik.touched.Name && formik.errors.Name && (
+              <div className="text-red-500 text-xs">{formik.errors.Name}</div>
+            )}
+          </div>
+          <div className="flex flex-col space-y-1">
+            <label htmlFor="Gender" className="text-sm font-medium">
+              Gender <span className="text-red-500">*</span>
+            </label>
+            <div
+              role="group"
+              aria-labelledby="my-radio-group"
+              className="flex items-center space-x-2"
+            >
+              <label className="text-sm">
+                <input
+                  type="radio"
+                  name="Gender"
+                  value="male"
+                  className="mr-1"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  checked={formik.values.Gender === "male"}
+                />
+                Male
+              </label>
+              <label className="text-sm">
+                <input
+                  type="radio"
+                  name="Gender"
+                  value="female"
+                  className="mr-1"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  checked={formik.values.Gender === "female"}
+                />
+                Female
+              </label>
+              <label className="text-sm">
+                <input
+                  type="radio"
+                  name="Gender"
+                  value="other"
+                  className="mr-1"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  checked={formik.values.Gender === "other"}
+                />
+                Other
+              </label>
+            </div>
+            {formik.touched && formik.errors && (
+              <div className="text-red-500 text-xs">{formik.errors.Gender}</div>
+            )}
+          </div>
+          <div className="flex flex-col space-y-1">
+            <label htmlFor="DOB" className="text-sm font-medium">
+              Date of Birth <span className="text-red-500">*</span>
+            </label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-full sm:w-[240px] pl-3 text-left font-normal border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 ",
+                    formik.values.DOB ? "text-black" : "text-gray-500"
+                  )}
+                >
+                  {formik.values.DOB ? (
+                    format(new Date(formik.values.DOB), "dd/MM/yyyy")
+                  ) : (
+                    <span>Pick a date</span>
+                  )}
+                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={
+                    formik.values.DOB ? new Date(formik.values.DOB) : null
+                  }
+                  onSelect={(date) => {
+                    formik.setFieldValue("DOB", date.toISOString());
+                  }}
+                  disabled={(date) =>
+                    date > new Date() || date < new Date("1900-01-01")
+                  }
+                  defaultMonth={new Date(2000, 1)}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
 
-      <div className="flex flex-col space-y-1">
-        <label htmlFor="PinCode" className="text-sm font-medium">
-          Pincode <span className="text-red-500">*</span>
-        </label>
-        <Input
-          type="number"
-          name="PinCode"
-          className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter Pincode"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.PinCode}
-        />
-        {formik.touched.PinCode && formik.errors.PinCode && (
-          <div className="text-red-500 text-xs">{formik.errors.PinCode}</div>
-        )}
-      </div>
+            {formik.touched.DOB &&
+              formik.errors.DOB && ( //?
+                <div className="text-red-500 text-xs">{formik.errors.DOB}</div>
+              )}
+          </div>
+          <div className="flex flex-col space-y-1">
+            <label htmlFor="Mobile" className="text-sm font-medium">
+              Mobile Number <span className="text-red-500">*</span>
+            </label>
+            <Input
+              type="number"
+              name="Mobile"
+              className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter Mobile Number"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.Mobile}
+            />
+            {formik.touched.Mobile && formik.errors.Mobile && (
+              <div className="text-red-500 text-xs">{formik.errors.Mobile}</div>
+            )}
+          </div>
+          <div className="flex flex-col space-y-1">
+            <label htmlFor="email" className="text-sm font-medium">
+              Email Address <span className="text-red-500">*</span>
+            </label>
+            <Input
+              type="email"
+              name="Email"
+              className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 "
+              placeholder="Enter Email Address"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.Email}
+            />
+            {formik.touched.Email && formik.errors.Email && (
+              <div className="text-red-500 text-xs">{formik.errors.Email}</div>
+            )}
+          </div>
 
-      <div className="flex flex-col space-y-1">
-        <label htmlFor="Distance" className="text-sm font-medium">
-          Distance from College <span className="text-red-500">*</span>
-        </label>
-        <Input
-          type="number"
-          name="Distance"
-          className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter Distance from College"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.Distance}
-        />
-        {formik.touched.Distance && formik.errors.Distance && (
-          <div className="text-red-500 text-xs">{formik.errors.Distance}</div>
-        )}
-      </div>
+          <div className="flex flex-col space-y-1">
+            <label htmlFor="PermanentAddress" className="text-sm font-medium">
+              Permanent Address <span className="text-red-500">*</span>
+            </label>
+            <Input
+              type="text"
+              name="PermanentAddress"
+              className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter Permanent Address"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.PermanentAddress}
+            />
+            {formik.touched.PermanentAddress &&
+              formik.errors.PermanentAddress && (
+                <div className="text-red-500 text-xs">
+                  {formik.errors.PermanentAddress}
+                </div>
+              )}
+          </div>
 
-      <div className="flex flex-col space-y-1">
-        <label htmlFor="Quota" className="text-sm font-medium">
-          Quota <span className="text-red-500">*</span>
-        </label>
-        <Select
-          onValueChange={(val) => {
-            formik.setFieldValue("Quota", val);
-          }}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select Quota"></SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup label="Quota">
-              {options.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+          <div className="flex flex-col space-y-1">
+            <label htmlFor="PresentAddress" className="text-sm font-medium">
+              Present Address <span className="text-red-500">*</span>
+            </label>
+            <Input
+              type="text"
+              name="PresentAddress"
+              className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter Present Address"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.PresentAddress}
+            />
+            {formik.touched.PresentAddress && formik.errors.PresentAddress && (
+              <div className="text-red-500 text-xs">
+                {formik.errors.PresentAddress}
+              </div>
+            )}
+          </div>
 
-        {formik.touched.Quota && formik.errors.Quota && (
-          <div className="text-red-500 text-xs">{formik.errors.Quota}</div>
-        )}
-      </div>
+          <div className="flex flex-col space-y-1">
+            <label htmlFor="PinCode" className="text-sm font-medium">
+              Pincode <span className="text-red-500">*</span>
+            </label>
+            <Input
+              type="number"
+              name="PinCode"
+              className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter Pincode"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.PinCode}
+            />
+            {formik.touched.PinCode && formik.errors.PinCode && (
+              <div className="text-red-500 text-xs">
+                {formik.errors.PinCode}
+              </div>
+            )}
+          </div>
 
-      <div className="flex flex-col space-y-1">
-        <label htmlFor="Caste" className="text-sm font-medium">
-          Caste <span className="text-red-500">*</span>
-        </label>
-        <Input
-          type="text"
-          name="Caste"
-          className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter Caste"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.Caste}
-        />
-        {formik.touched.Caste && formik.errors.Caste && (
-          <div className="text-red-500 text-xs">{formik.errors.Caste}</div>
-        )}
-      </div>
+          <div className="flex flex-col space-y-1">
+            <label htmlFor="Distance" className="text-sm font-medium">
+              Distance from College <span className="text-red-500">*</span>
+            </label>
+            <Input
+              type="number"
+              name="Distance"
+              className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter Distance from College"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.Distance}
+            />
+            {formik.touched.Distance && formik.errors.Distance && (
+              <div className="text-red-500 text-xs">
+                {formik.errors.Distance}
+              </div>
+            )}
+          </div>
 
-      <div className="flex flex-col space-y-1">
-        <label htmlFor="Income" className="text-sm font-medium">
-          Annual Income <span className="text-red-500">*</span>
-        </label>
-        <Input
-          type="number"
-          name="Income"
-          className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter Annual Income"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.Income}
-        />
-        {formik.touched.Income && formik.errors.Income && (
-          <div className="text-red-500 text-xs">{formik.errors.Income}</div>
-        )}
-      </div>
+          <div className="flex flex-col space-y-1">
+            <label htmlFor="Quota" className="text-sm font-medium">
+              Quota <span className="text-red-500">*</span>
+            </label>
+            <Select
+              onValueChange={(val) => {
+                formik.setFieldValue("Quota", val);
+              }}
+            >
+              <SelectTrigger className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                <SelectValue placeholder="Select Quota"></SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup label="Quota">
+                  {quotaoptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
 
-      <div className="flex flex-col space-y-1">
-        <label htmlFor="Branch" className="text-sm font-medium">
-          Branch <span className="text-red-500">*</span>
-        </label>
-        <Input
-          type="text"
-          name="Branch"
-          className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter Branch"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.Branch}
-        />
-        {formik.touched.Branch && formik.errors.Branch && (
-          <div className="text-red-500 text-xs">{formik.errors.Branch}</div>
-        )}
-      </div>
+            {formik.touched.Quota && formik.errors.Quota && (
+              <div className="text-red-500 text-xs">{formik.errors.Quota}</div>
+            )}
+          </div>
 
-      <div className="flex flex-col space-y-1">
-        <label htmlFor="Sem" className="text-sm font-medium">
-          Semester <span className="text-red-500">*</span>
-        </label>
-        <Input
-          type="text"
-          name="Sem"
-          className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter Semester"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.Sem}
-        />
-        {formik.touched.Sem && formik.errors.Sem && (
-          <div className="text-red-500 text-xs">{formik.errors.Sem}</div>
-        )}
-      </div>
+          <div className="flex flex-col space-y-1">
+            <label htmlFor="Caste" className="text-sm font-medium">
+              Caste <span className="text-red-500">*</span>
+            </label>
+            <Input
+              type="text"
+              name="Caste"
+              className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter Caste"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.Caste}
+            />
+            {formik.touched.Caste && formik.errors.Caste && (
+              <div className="text-red-500 text-xs">{formik.errors.Caste}</div>
+            )}
+          </div>
 
-      <div className="flex flex-col space-y-1">
-        <label htmlFor="CGPA" className="text-sm font-medium">
-          CGPA <span className="text-red-500">*</span>
-        </label>
-        <Input
-          type="number"
-          name="CGPA"
-          className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter CGPA"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.CGPA}
-        />
-        {formik.touched.CGPA && formik.errors.CGPA && (
-          <div className="text-red-500 text-xs">{formik.errors.CGPA}</div>
-        )}
-      </div>
+          <div className="flex flex-col space-y-1">
+            <label htmlFor="Income" className="text-sm font-medium">
+              Annual Income <span className="text-red-500">*</span>
+            </label>
+            <Input
+              type="number"
+              name="Income"
+              className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter Annual Income"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.Income}
+            />
+            {formik.touched.Income && formik.errors.Income && (
+              <div className="text-red-500 text-xs">{formik.errors.Income}</div>
+            )}
+          </div>
 
-      <div className="flex justify-center">
-        <Button
-          type="submit"
-          disabled={formik.isSubmitting}
-          className={`bg-blue-500 text-white font-semibold px-4 w-full py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
-            formik.isSubmitting ? "disabled opacity-50 cursor-not-allowed" : ""
-          }`}
-        >
-          {formik.isSubmitting ? "Submitting..." : "Submit"}
-        </Button>
-      </div>
-    </form>
+          <div className="flex flex-col space-y-1">
+            <label htmlFor="Branch" className="text-sm font-medium">
+              Branch <span className="text-red-500">*</span>
+            </label>
+            <Select
+              onValueChange={(val) => {
+                formik.setFieldValue("Branch", val);
+              }}
+            >
+              <SelectTrigger className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                <SelectValue placeholder="Select Branch"></SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup label="Branch">
+                  {branchoptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+
+            {formik.touched.Branch && formik.errors.Branch && (
+              <div className="text-red-500 text-xs">{formik.errors.Branch}</div>
+            )}
+          </div>
+
+          <div className="flex flex-col space-y-1">
+            <label htmlFor="Sem" className="text-sm font-medium">
+              Semester <span className="text-red-500">*</span>
+            </label>
+            <Select
+              onValueChange={(val) => {
+                formik.setFieldValue("Sem", val);
+              }}
+            >
+              <SelectTrigger className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                <SelectValue placeholder="Select Sem"></SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup label="Sem">
+                  {semoptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            {formik.touched.Sem && formik.errors.Sem && (
+              <div className="text-red-500 text-xs">{formik.errors.Sem}</div>
+            )}
+          </div>
+
+          <div className="flex flex-col space-y-1">
+            <label htmlFor="CGPA" className="text-sm font-medium">
+              CGPA <span className="text-red-500">*</span>
+            </label>
+            <Input
+              type="number"
+              name="CGPA"
+              className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter CGPA"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.CGPA}
+            />
+            {formik.touched.CGPA && formik.errors.CGPA && (
+              <div className="text-red-500 text-xs">{formik.errors.CGPA}</div>
+            )}
+          </div>
+
+          <div className="flex justify-center">
+            <Button
+              type="submit"
+              disabled={formik.isSubmitting}
+              className={`bg-blue-500 text-white font-semibold px-4 w-full py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
+                formik.isSubmitting
+                  ? "disabled opacity-50 cursor-not-allowed"
+                  : ""
+              }`}
+            >
+              {formik.isSubmitting ? "Submitting..." : "Submit"}
+            </Button>
+          </div>
+        </form>
+      )}
+    </>
   );
 };
 
