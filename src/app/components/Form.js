@@ -1,26 +1,34 @@
 import React from "react";
 import * as Yup from "yup";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { useFormik } from "formik";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-} from "@/components/ui/dropdown-menu";
-import { DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const Applicationform = () => {
+  const options = [
+    { value: "SC", label: "SC" },
+    { value: "ST", label: "ST" },
+    { value: "OBC", label: "OBC" },
+    { value: "General", label: "General" },
+  ];
+
   const CalendarIcon = ({ className }) => (
     <svg
       width="15"
@@ -32,23 +40,6 @@ const Applicationform = () => {
     >
       <path
         d="M4.5 1C4.77614 1 5 1.22386 5 1.5V2H10V1.5C10 1.22386 10.2239 1 10.5 1C10.7761 1 11 1.22386 11 1.5V2H12.5C13.3284 2 14 2.67157 14 3.5V12.5C14 13.3284 13.3284 14 12.5 14H2.5C1.67157 14 1 13.3284 1 12.5V3.5C1 2.67157 1.67157 2 2.5 2H4V1.5C4 1.22386 4.22386 1 4.5 1ZM10 3V3.5C10 3.77614 10.2239 4 10.5 4C10.7761 4 11 3.77614 11 3.5V3H12.5C12.7761 3 13 3.22386 13 3.5V5H2V3.5C2 3.22386 2.22386 3 2.5 3H4V3.5C4 3.77614 4.22386 4 4.5 4C4.77614 4 5 3.77614 5 3.5V3H10ZM2 6V12.5C2 12.7761 2.22386 13 2.5 13H12.5C12.7761 13 13 12.7761 13 12.5V6H2ZM7 7.5C7 7.22386 7.22386 7 7.5 7C7.77614 7 8 7.22386 8 7.5C8 7.77614 7.77614 8 7.5 8C7.22386 8 7 7.77614 7 7.5ZM9.5 7C9.22386 7 9 7.22386 9 7.5C9 7.77614 9.22386 8 9.5 8C9.77614 8 10 7.77614 10 7.5C10 7.22386 9.77614 7 9.5 7ZM11 7.5C11 7.22386 11.2239 7 11.5 7C11.7761 7 12 7.22386 12 7.5C12 7.77614 11.7761 8 11.5 8C11.2239 8 11 7.77614 11 7.5ZM11.5 9C11.2239 9 11 9.22386 11 9.5C11 9.77614 11.2239 10 11.5 10C11.7761 10 12 9.77614 12 9.5C12 9.22386 11.7761 9 11.5 9ZM9 9.5C9 9.22386 9.22386 9 9.5 9C9.77614 9 10 9.22386 10 9.5C10 9.77614 9.77614 10 9.5 10C9.22386 10 9 9.77614 9 9.5ZM7.5 9C7.22386 9 7 9.22386 7 9.5C7 9.77614 7.22386 10 7.5 10C7.77614 10 8 9.77614 8 9.5C8 9.22386 7.77614 9 7.5 9ZM5 9.5C5 9.22386 5.22386 9 5.5 9C5.77614 9 6 9.22386 6 9.5C6 9.77614 5.77614 10 5.5 10C5.22386 10 5 9.77614 5 9.5ZM3.5 9C3.22386 9 3 9.22386 3 9.5C3 9.77614 3.22386 10 3.5 10C3.77614 10 4 9.77614 4 9.5C4 9.22386 3.77614 9 3.5 9ZM3 11.5C3 11.2239 3.22386 11 3.5 11C3.77614 11 4 11.2239 4 11.5C4 11.7761 3.77614 12 3.5 12C3.22386 12 3 11.7761 3 11.5ZM5.5 11C5.22386 11 5 11.2239 5 11.5C5 11.7761 5.22386 12 5.5 12C5.77614 12 6 11.7761 6 11.5C6 11.2239 5.77614 11 5.5 11ZM7 11.5C7 11.2239 7.22386 11 7.5 11C7.77614 11 8 11.2239 8 11.5C8 11.7761 7.77614 12 7.5 12C7.22386 12 7 11.7761 7 11.5ZM9.5 11C9.22386 11 9 11.2239 9 11.5C9 11.7761 9.22386 12 9.5 12C9.77614 12 10 11.7761 10 11.5C10 11.2239 9.77614 11 9.5 11Z"
-        fill="currentColor"
-        fillRule="evenodd"
-        clipRule="evenodd"
-      ></path>
-    </svg>
-  );
-
-  const DropDownArrow = ({ className }) => (
-    <svg
-      width="15"
-      height="15"
-      viewBox="0 0 15 15"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M7.5 2C7.77614 2 8 2.22386 8 2.5L8 11.2929L11.1464 8.14645C11.3417 7.95118 11.6583 7.95118 11.8536 8.14645C12.0488 8.34171 12.0488 8.65829 11.8536 8.85355L7.85355 12.8536C7.75979 12.9473 7.63261 13 7.5 13C7.36739 13 7.24021 12.9473 7.14645 12.8536L3.14645 8.85355C2.95118 8.65829 2.95118 8.34171 3.14645 8.14645C3.34171 7.95118 3.65829 7.95118 3.85355 8.14645L7 11.2929L7 2.5C7 2.22386 7.22386 2 7.5 2Z"
         fill="currentColor"
         fillRule="evenodd"
         clipRule="evenodd"
@@ -100,6 +91,7 @@ const Applicationform = () => {
       CGPA: Yup.string().required("CGPA is required"),
     }),
     onSubmit: (values, { setSubmitting }) => {
+      alert(JSON.stringify(values, null, 2));
       console.log(values);
       setSubmitting(false);
     },
@@ -115,7 +107,7 @@ const Applicationform = () => {
       </h2>
       <div className="flex flex-col space-y-1">
         <label htmlFor="Admno" className="text-sm font-medium">
-          Admission No
+          Admission No <span className="text-red-500">*</span>
         </label>
         <Input
           type="text"
@@ -133,7 +125,7 @@ const Applicationform = () => {
       </div>
       <div className="flex flex-col space-y-1">
         <label htmlFor="Regno" className="text-sm font-medium">
-          Registration No
+          Registration No <span className="text-red-500">*</span>
         </label>
         <Input
           type="text"
@@ -150,7 +142,7 @@ const Applicationform = () => {
       </div>
       <div className="flex flex-col space-y-1">
         <label htmlFor="Name" className="text-sm font-medium">
-          Name
+          Name <span className="text-red-500">*</span>
         </label>
         <Input
           type="text"
@@ -167,7 +159,7 @@ const Applicationform = () => {
       </div>
       <div className="flex flex-col space-y-1">
         <label htmlFor="Gender" className="text-sm font-medium">
-          Gender
+          Gender <span className="text-red-500">*</span>
         </label>
         <div
           role="group"
@@ -217,7 +209,7 @@ const Applicationform = () => {
       </div>
       <div className="flex flex-col space-y-1">
         <label htmlFor="DOB" className="text-sm font-medium">
-          Date of Birth
+          Date of Birth <span className="text-red-500">*</span>
         </label>
         <Popover>
           <PopoverTrigger asChild>
@@ -259,7 +251,7 @@ const Applicationform = () => {
       </div>
       <div className="flex flex-col space-y-1">
         <label htmlFor="Mobile" className="text-sm font-medium">
-          Mobile Number
+          Mobile Number <span className="text-red-500">*</span>
         </label>
         <Input
           type="number"
@@ -276,7 +268,7 @@ const Applicationform = () => {
       </div>
       <div className="flex flex-col space-y-1">
         <label htmlFor="email" className="text-sm font-medium">
-          Email Address
+          Email Address <span className="text-red-500">*</span>
         </label>
         <Input
           type="email"
@@ -294,7 +286,7 @@ const Applicationform = () => {
 
       <div className="flex flex-col space-y-1">
         <label htmlFor="PermanentAddress" className="text-sm font-medium">
-          Permanent Address
+          Permanent Address <span className="text-red-500">*</span>
         </label>
         <Input
           type="text"
@@ -314,7 +306,7 @@ const Applicationform = () => {
 
       <div className="flex flex-col space-y-1">
         <label htmlFor="PresentAddress" className="text-sm font-medium">
-          Present Address
+          Present Address <span className="text-red-500">*</span>
         </label>
         <Input
           type="text"
@@ -334,7 +326,7 @@ const Applicationform = () => {
 
       <div className="flex flex-col space-y-1">
         <label htmlFor="PinCode" className="text-sm font-medium">
-          Pincode
+          Pincode <span className="text-red-500">*</span>
         </label>
         <Input
           type="number"
@@ -352,7 +344,7 @@ const Applicationform = () => {
 
       <div className="flex flex-col space-y-1">
         <label htmlFor="Distance" className="text-sm font-medium">
-          Distance from College
+          Distance from College <span className="text-red-500">*</span>
         </label>
         <Input
           type="number"
@@ -369,63 +361,54 @@ const Applicationform = () => {
       </div>
 
       <div className="flex flex-col space-y-1">
-        <label htmlFor="Caste" className="text-sm font-medium">
-          Caste
-        </label>
-        <DropdownMenu align="left" className="relative h-4">
-          <DropdownMenuTrigger className="text-sm text-left w-max outline-none border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 ">
-            {formik.values.Caste ? formik.values.Caste : "Select Caste"}
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem
-              onClick={() => formik.setFieldValue("Caste", "General")}
-            >
-              General
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => formik.setFieldValue("Caste", "OBC")}
-            >
-              OBC
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => formik.setFieldValue("Caste", "SC")}
-            >
-              SC
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => formik.setFieldValue("Caste", "ST")}
-            >
-              ST
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        {formik.touched.Caste && formik.errors.Caste && (
-          <div className="text-red-500 text-xs">{formik.errors.Caste}</div>
-        )}
-      </div>
-
-      <div className="flex flex-col space-y-1">
         <label htmlFor="Quota" className="text-sm font-medium">
-          Quota
+          Quota <span className="text-red-500">*</span>
         </label>
-        <Input
-          type="text"
-          name="Quota"
-          className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter Quota"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.Quota}
-        />
+        <Select
+          onValueChange={(val) => {
+            formik.setFieldValue("Quota", val);
+          }}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select Quota"></SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup label="Quota">
+              {options.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+
         {formik.touched.Quota && formik.errors.Quota && (
           <div className="text-red-500 text-xs">{formik.errors.Quota}</div>
         )}
       </div>
 
       <div className="flex flex-col space-y-1">
+        <label htmlFor="Caste" className="text-sm font-medium">
+          Caste <span className="text-red-500">*</span>
+        </label>
+        <Input
+          type="text"
+          name="Caste"
+          className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Enter Caste"
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          value={formik.values.Caste}
+        />
+        {formik.touched.Caste && formik.errors.Caste && (
+          <div className="text-red-500 text-xs">{formik.errors.Caste}</div>
+        )}
+      </div>
+
+      <div className="flex flex-col space-y-1">
         <label htmlFor="Income" className="text-sm font-medium">
-          Annual Income
+          Annual Income <span className="text-red-500">*</span>
         </label>
         <Input
           type="number"
@@ -443,7 +426,7 @@ const Applicationform = () => {
 
       <div className="flex flex-col space-y-1">
         <label htmlFor="Branch" className="text-sm font-medium">
-          Branch
+          Branch <span className="text-red-500">*</span>
         </label>
         <Input
           type="text"
@@ -461,7 +444,7 @@ const Applicationform = () => {
 
       <div className="flex flex-col space-y-1">
         <label htmlFor="Sem" className="text-sm font-medium">
-          Semester
+          Semester <span className="text-red-500">*</span>
         </label>
         <Input
           type="text"
@@ -479,7 +462,7 @@ const Applicationform = () => {
 
       <div className="flex flex-col space-y-1">
         <label htmlFor="CGPA" className="text-sm font-medium">
-          CGPA
+          CGPA <span className="text-red-500">*</span>
         </label>
         <Input
           type="number"
