@@ -15,6 +15,17 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
   Select,
   SelectContent,
   SelectGroup,
@@ -22,6 +33,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+const AlertDialog = () => {
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger>Open</AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. This will permanently delete your
+            account and remove your data from our servers.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction>Continue</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+};
 
 const Applicationform = () => {
   const [formSubmissionData, setFormSubmissionData] = React.useState({
@@ -49,6 +81,7 @@ const Applicationform = () => {
     { value: "M1", label: "M1" },
     { value: "M3", label: "M3" },
   ];
+
   const branchoptions = [
     { value: "ME", label: "ME" },
     { value: "CE", label: "CE" },
@@ -59,6 +92,7 @@ const Applicationform = () => {
     { value: "PE", label: "PE" },
     { value: "CHE", label: "CHE" },
   ];
+
   const CalendarIcon = ({ className }) => (
     <svg
       width="15"
