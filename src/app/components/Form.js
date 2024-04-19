@@ -10,11 +10,6 @@ import { updateStudentData } from "@/lib/functions";
 import Success from "./Success";
 
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -25,6 +20,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
 import {
   Select,
   SelectContent,
@@ -33,27 +35,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-const AlertDialog = () => {
-  return (
-    <AlertDialog>
-      <AlertDialogTrigger>Open</AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Continue</AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  );
-};
 
 const Applicationform = () => {
   const [formSubmissionData, setFormSubmissionData] = React.useState({
@@ -111,6 +92,43 @@ const Applicationform = () => {
     </svg>
   );
 
+  function AlertDialogDemo() {
+    return (
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button
+            type="button"
+            disabled={formik.isSubmitting || !formik.isValid}
+            className={`bg-blue-500 text-white font-semibold px-4 w-full py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
+              formik.isSubmitting
+                ? "disabled opacity-50 cursor-not-allowed"
+                : ""
+            }`}
+          >
+            {formik.isSubmitting ? "Submitting..." : "Submit"}
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your
+              account and remove your data from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction>
+              <Button type="submit" disabled={formik.isSubmitting}>
+                {formik.isSubmitting ? "Submitting..." : "Submit"}
+              </Button>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    );
+  }
+
   const formik = useFormik({
     initialValues: {
       Admno: "",
@@ -152,22 +170,24 @@ const Applicationform = () => {
       // cannot be negative
       Income: Yup.string().required("Income is required").min(0),
       Branch: Yup.string().required("Branch is required"),
-      Sem: Yup.string().oneOf([
-        "S1",
-        "S2",
-        "S3",
-        "S4",
-        "S5",
-        "S6",
-        "S7",
-        "S8",
-        "S9",
-        "S10",
-        "M1",
-        "M2",
-        "M3",
-        "M4",
-      ]),
+      Sem: Yup.string()
+        .oneOf([
+          "S1",
+          "S2",
+          "S3",
+          "S4",
+          "S5",
+          "S6",
+          "S7",
+          "S8",
+          "S9",
+          "S10",
+          "M1",
+          "M2",
+          "M3",
+          "M4",
+        ])
+        .required("Semester is required"),
       CGPA: Yup.string().min(1).max(10).required("CGPA is required"),
     }),
     onSubmit: async (values, { setSubmitting }) => {
@@ -546,7 +566,7 @@ const Applicationform = () => {
                 formik.setFieldValue("Branch", val);
               }}
             >
-              <SelectTrigger className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500">
+              <SelectTrigger className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 ">
                 <SelectValue placeholder="Select Branch"></SelectValue>
               </SelectTrigger>
               <SelectContent>
@@ -574,7 +594,11 @@ const Applicationform = () => {
                 formik.setFieldValue("Sem", val);
               }}
             >
-              <SelectTrigger className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500">
+              <SelectTrigger
+                className={
+                  "border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-50"
+                }
+              >
                 <SelectValue placeholder="Select Sem"></SelectValue>
               </SelectTrigger>
               <SelectContent>
@@ -599,7 +623,7 @@ const Applicationform = () => {
             <Input
               type="number"
               name="CGPA"
-              className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 "
               placeholder="Enter CGPA"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -609,11 +633,11 @@ const Applicationform = () => {
               <div className="text-red-500 text-xs">{formik.errors.CGPA}</div>
             )}
           </div>
-
           <div className="flex justify-center">
+            {/* <AlertDialogDemo /> */}
             <Button
               type="submit"
-              disabled={formik.isSubmitting}
+              disabled={formik.isSubmitting || !formik.isValid}
               className={`bg-blue-500 text-white font-semibold px-4 w-full py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
                 formik.isSubmitting
                   ? "disabled opacity-50 cursor-not-allowed"
