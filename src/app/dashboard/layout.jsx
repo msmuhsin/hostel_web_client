@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import toast, { Toaster } from 'react-hot-toast';
 import {
   CircleUser,
   Home,
@@ -165,6 +166,7 @@ export default function DashboardLayout({ children }) {
           </DropdownMenu>
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 w-full ">
+          <Toaster />
           <div className="flex items-center w-full">{children}</div>
         </main>
       </div>

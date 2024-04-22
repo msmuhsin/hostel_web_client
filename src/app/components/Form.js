@@ -21,6 +21,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+
 import {
   Popover,
   PopoverContent,
@@ -192,7 +193,7 @@ const Applicationform = () => {
       }
 
       alert(JSON.stringify(values, null, 2));
-      
+
       const res = await createStudentData(values);
 
       if (res.data.success) {
@@ -294,11 +295,11 @@ const Applicationform = () => {
                 <input
                   type="radio"
                   name="Gender"
-                  value="male"
+                  value="Male"
                   className="mr-1"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  checked={formik.values.Gender === "male"}
+                  checked={formik.values.Gender === "Male"}
                 />
                 Male
               </label>
@@ -306,11 +307,11 @@ const Applicationform = () => {
                 <input
                   type="radio"
                   name="Gender"
-                  value="female"
+                  value="Femal"
                   className="mr-1"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  checked={formik.values.Gender === "female"}
+                  checked={formik.values.Gender === "Female"}
                 />
                 Female
               </label>
@@ -318,11 +319,11 @@ const Applicationform = () => {
                 <input
                   type="radio"
                   name="Gender"
-                  value="other"
+                  value="Other"
                   className="mr-1"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  checked={formik.values.Gender === "other"}
+                  checked={formik.values.Gender === "Other"}
                 />
                 Other
               </label>
