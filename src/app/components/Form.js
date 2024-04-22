@@ -6,7 +6,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { useFormik } from "formik";
 import { format, set } from "date-fns";
 import { cn } from "@/lib/utils";
-import { updateStudentData } from "@/lib/functions";
+import { createStudentData } from "@/lib/functions";
 import Success from "./Success";
 
 import {
@@ -155,47 +155,45 @@ const Applicationform = () => {
       Name: Yup.string().required("Name is required"),
       Gender: Yup.string().required("Gender is required"),
       DOB: Yup.string().required("Date of Birth is required"),
-      Mobile: Yup.string()
+      Mobile: Yup.number()
         .required("Mobile Number is required")
-        .matches(/^[6-9]\d{9}$/, "Invalid Mobile Number"),
+        .min(1000000000, "Invalid Mobile Number"),
       Email: Yup.string().required("Email is required").email("Invalid Email"),
       PermanentAddress: Yup.string().required("Permanent Address is required"),
       PresentAddress: Yup.string().required("Present Address is required"),
       PinCode: Yup.string()
         .required("Pincode is required")
-        .matches(/^[1-9][0-9]{5}$/, "Invalid Pincode"),
-      Distance: Yup.string().required("Distance is required").min(0),
+        .min(6)
+        .max(6)
+        .length(6)
+        .matches(/^[0-9]+$/, "Invalid Pincode"),
+      Distance: Yup.number().required("Distance is required").min(0).max(3000),
       Caste: Yup.string().required("Caste is required"),
       Quota: Yup.string().required("Quota is required"),
       // cannot be negative
       Income: Yup.string().required("Income is required").min(0),
       Branch: Yup.string().required("Branch is required"),
       Sem: Yup.string()
-        .oneOf([
-          "S1",
-          "S2",
-          "S3",
-          "S4",
-          "S5",
-          "S6",
-          "S7",
-          "S8",
-          "S9",
-          "S10",
-          "M1",
-          "M2",
-          "M3",
-          "M4",
-        ])
+        .oneOf(["S1", "S3", "S5", "S7", "S9", "M1", "M2"])
         .required("Semester is required"),
-      CGPA: Yup.string().min(1).max(10).required("CGPA is required"),
+      // cannot be negative
+      CGPA: Yup.number().required("CGPA is required").min(1).max(10),
     }),
+
     onSubmit: async (values, { setSubmitting }) => {
+      values.DOB = format(new Date(values.DOB), "yyyy-MM-dd");
+      // const isValidate = await formik.validateForm(values);
+
+      if (values.Distance < 0 || values.Distance > 3000) {
+        formik.setFieldError(
+          "Distance",
+          "Distance should be between 0 and 3000"
+        );
+      }
+
       alert(JSON.stringify(values, null, 2));
-
-      const res = await updateStudentData(values);
-
-      console.log(res.data);
+      
+      const res = await createStudentData(values);
 
       if (res.data.success) {
         setFormSubmissionData({

@@ -74,9 +74,9 @@ export default function DashboardLayout({ children }) {
               <Link
                 href="/dashboard/room-allocation"
                 className={
-                  "flex items-center gap-3 rounded-lg bg-muted px-3 py-2 transition-all hover:text-primary" +
+                  "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary" +
                   (pathname === "/dashboard/room-allocation"
-                    ? " text-primary"
+                    ? " bg-muted text-primary"
                     : " text-muted-foreground")
                 }
               >
@@ -132,7 +132,7 @@ export default function DashboardLayout({ children }) {
                 </Link>
                 <Link
                   href="#"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-foreground hover:text-foreground"
+                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
                 >
                   <Bed className="h-5 w-5" />
                   Room Allocation
@@ -164,8 +164,8 @@ export default function DashboardLayout({ children }) {
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
-        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-          <div className="flex items-center">{children}</div>
+        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 w-full ">
+          <div className="flex items-center w-full">{children}</div>
         </main>
       </div>
     </div>

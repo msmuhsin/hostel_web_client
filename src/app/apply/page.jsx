@@ -9,6 +9,6 @@ const Applypage = () => {
       <Form />
     </main>
   );
-};
+};  
 
 export default Applypage;

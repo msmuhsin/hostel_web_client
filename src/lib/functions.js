@@ -1,7 +1,11 @@
 import axios from "axios";
 
-function updateStudentData(data) {
+function createStudentData(data) {
   return axios.post("http://localhost:5000/student", data);
 }
 
-export { updateStudentData };
+function getAllStudents() {
+  return axios.get("http://localhost:5000/student");
+}
+
+export { createStudentData, getAllStudents };
