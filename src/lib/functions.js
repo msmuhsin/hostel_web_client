@@ -1,16 +1,19 @@
-import axios from "axios";
+import api from "./api";
 
 function createStudentData(data) {
-  return axios.post("http://localhost:5000/student", data);
+  return api.post("/student", data);
 }
 
 function getAllStudents() {
-  return axios.get("http://localhost:5000/student");
+  return api.get("/student");
+}
+
+function register(data) {
+  return api.post("/user/register", data);
 }
 
 function updateStudentData(data, id) {
-  return axios.put(`http://localhost:5000/student/${id}`, data);
+  return api.put(`/student/${id}`, data);
 }
 
-
-export { createStudentData, getAllStudents, updateStudentData };
+export { createStudentData, getAllStudents, updateStudentData, register };

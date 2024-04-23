@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getAllStudents, updateStudentData } from "@/lib/functions";
 import toast from "react-hot-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,12 +8,13 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { TabsList } from "@/components/ui/tabs";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -60,26 +61,26 @@ const Fields = [
   "Room No",
   "",
 ];
-const FieldsEdit = [
-  "Appl No",
-  "Admn No",
-  "Reg No",
-  "Name",
-  "Gender",
-  "DOB",
-  "Mob No",
-  "Email",
-  "Permanent Address",
-  "Present Address",
-  "Pincode",
-  "Distance",
-  "Caste",
-  "Quota",
-  "Income",
-  "Branch",
-  "Semester",
-  "CGPA",
-];
+// const FieldsEdit = [
+//   "Appl No",
+//   "Admn No",
+//   "Reg No",
+//   "Name",
+//   "Gender",
+//   "DOB",
+//   "Mob No",
+//   "Email",
+//   "Permanent Address",
+//   "Present Address",
+//   "Pincode",
+//   "Distance",
+//   "Caste",
+//   "Quota",
+//   "Income",
+//   "Branch",
+//   "Semester",
+//   "CGPA",
+// ];
 
 const StudentFieldName = [
   "applNo",
@@ -121,6 +122,41 @@ const formikFields = [
   "CGPA",
 ];
 
+const validationSchema = Yup.object({
+  Name: Yup.string().required("Name is required"),
+  Gender: Yup.string()
+    .required("Gender is required")
+    .oneOf(["Male", "Female", "Other"]),
+  DOB: Yup.string()
+    .required("Date of Birth is required")
+    .matches(/^\d{4}-\d{2}-\d{2}$/, "Invalid Date"),
+  Mobile: Yup.number()
+    .required("Mobile Number is required")
+    .min(1000000000, "Invalid Mobile Number"),
+  Email: Yup.string().required("Email is required").email("Invalid Email"),
+  PermanentAddress: Yup.string().required("Permanent Address is required"),
+  PresentAddress: Yup.string().required("Present Address is required"),
+  PinCode: Yup.string()
+    .required("Pincode is required")
+    .min(6)
+    .max(6)
+    .length(6)
+    .matches(/^[0-9]+$/, "Invalid Pincode"),
+  Distance: Yup.number().required("Distance is required").min(0).max(3000),
+  Caste: Yup.string().required("Caste is required"),
+  Quota: Yup.string().required("Quota is required"),
+  // cannot be negative
+  Income: Yup.string().required("Income is required").min(0),
+  Branch: Yup.string()
+    .oneOf(["ME", "CE", "BA", "CSE", "EEE", "ECE", "PE", "CHE"])
+    .required("Branch is required"),
+  Sem: Yup.string()
+    .oneOf(["S1", "S3", "S5", "S7", "S9", "M1", "M2"])
+    .required("Semester is required"),
+  // cannot be negative
+  CGPA: Yup.number().required("CGPA is required").min(1).max(10),
+});
+
 export function EditStudentDialog({
   student,
   setAllStudentData,
@@ -148,38 +184,7 @@ export function EditStudentDialog({
       CGPA: student.cgpa,
     },
 
-    validationSchema: Yup.object({
-      Name: Yup.string().required("Name is required"),
-      Gender: Yup.string()
-        .required("Gender is required")
-        .oneOf(["Male", "Female", "Other"]),
-      DOB: Yup.string()
-        .required("Date of Birth is required")
-        .matches(/^\d{4}-\d{2}-\d{2}$/, "Invalid Date"),
-      Mobile: Yup.number()
-        .required("Mobile Number is required")
-        .min(1000000000, "Invalid Mobile Number"),
-      Email: Yup.string().required("Email is required").email("Invalid Email"),
-      PermanentAddress: Yup.string().required("Permanent Address is required"),
-      PresentAddress: Yup.string().required("Present Address is required"),
-      PinCode: Yup.string()
-        .required("Pincode is required")
-        .min(6)
-        .max(6)
-        .length(6)
-        .matches(/^[0-9]+$/, "Invalid Pincode"),
-      Distance: Yup.number().required("Distance is required").min(0).max(3000),
-      Caste: Yup.string().required("Caste is required"),
-      Quota: Yup.string().required("Quota is required"),
-      // cannot be negative
-      Income: Yup.string().required("Income is required").min(0),
-      Branch: Yup.string().required("Branch is required"),
-      Sem: Yup.string()
-        .oneOf(["S1", "S3", "S5", "S7", "S9", "M1", "M2"])
-        .required("Semester is required"),
-      // cannot be negative
-      CGPA: Yup.number().required("CGPA is required").min(1).max(10),
-    }),
+    validationSchema: validationSchema,
 
     onSubmit: async (values, { setSubmitting }) => {
       setSubmitting(true);
@@ -215,33 +220,28 @@ export function EditStudentDialog({
         <DialogHeader>
           <DialogTitle>Edit student Data</DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 overflow-y-scroll  no-scrollbar w-full pr-1">
-          <div className="grid gap-2 h-[80vh]">
-            {FieldsEdit.map((field, index) => (
-              <div className="grid grid-cols-3 items-center gap-4" key={field}>
-                <Label htmlFor={field} className="col-span-1">
-                  {field}
-                </Label>
-                <Input
-                  id={field}
-                  type="text"
-                  value={studentData[StudentFieldName[index]]}
-                  disabled={field === "Appl No" || field === "Admn No"}
-                  className="col-span-2 h-8"
-                  onChange={(e) => {
-                    setStudentData({
-                      ...studentData,
-                      [StudentFieldName[index]]: e.target.value,
-                    });
-                    formik.setFieldValue(
-                      formikFields[index - 2],
-                      e.target.value
-                    );
-                  }}
-                />
-              </div>
-            ))}
-          </div>
+        <div className="grid gap-4 overflow-y-scroll py-2 no-scrollbar w-full pr-1 h-[70vh]">
+          {Fields.slice(0, Fields.length - 3).map((field, index) => (
+            <div className="grid grid-cols-3 items-center gap-4" key={field}>
+              <Label htmlFor={field} className="col-span-1">
+                {field}
+              </Label>
+              <Input
+                id={field}
+                type="text"
+                value={studentData[StudentFieldName[index]]}
+                disabled={field === "Appl No" || field === "Admn No"}
+                className="col-span-2 h-8"
+                onChange={(e) => {
+                  setStudentData({
+                    ...studentData,
+                    [StudentFieldName[index]]: e.target.value,
+                  });
+                  formik.setFieldValue(formikFields[index - 2], e.target.value);
+                }}
+              />
+            </div>
+          ))}
         </div>
         <DialogFooter>
           <div className="flex justify-between items-center gap-4">
@@ -270,6 +270,72 @@ export function EditStudentDialog({
   );
 }
 
+function StudentTable({
+  studentData,
+  setAllStudentData,
+  setHighlightedRow,
+  highlightedRow,
+}) {
+  return (
+    <CardContent className="">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            {Fields.map((field) => (
+              <TableCell key={field} className="text-nowrap">
+                {field}
+              </TableCell>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {studentData.map((student) => (
+            <TableRow
+              key={student._id}
+              className={
+                "bg-accent" +
+                (student._id === highlightedRow
+                  ? " bg-green-200/40 transition ease-in-out delay-150"
+                  : "")
+              }
+            >
+              <TableCell>{student.applNo}</TableCell>
+              <TableCell>{student.admNo}</TableCell>
+              <TableCell>{student.regNo}</TableCell>
+              <TableCell>{student.name}</TableCell>
+              <TableCell>{student.gender}</TableCell>
+              <TableCell>{student.dob}</TableCell>
+              <TableCell>{student.mobileNo}</TableCell>
+              <TableCell>{student.email}</TableCell>
+              <TableCell>{student.permanentAddress}</TableCell>
+              <TableCell>{student.presentAddress}</TableCell>
+              <TableCell>{student.pincode}</TableCell>
+              <TableCell>{student.distance}</TableCell>
+              <TableCell>{student.caste}</TableCell>
+              <TableCell>{student.quota}</TableCell>
+              <TableCell>{student.income}</TableCell>
+              <TableCell>{student.branch}</TableCell>
+              <TableCell>{student.sem}</TableCell>
+              <TableCell>{student.cgpa}</TableCell>
+              <TableCell>{student.score}</TableCell>
+              <TableCell>
+                {student.roomNo ? student.roomNo : "Not Allotted"}
+              </TableCell>
+              <TableCell>
+                <EditStudentDialog
+                  student={student}
+                  setAllStudentData={setAllStudentData}
+                  setHighlightedRow={setHighlightedRow}
+                />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </CardContent>
+  );
+}
+
 export default function Dashboard() {
   const semesters = ["All", "S1", "S3", "S5", "S7", "S9", "M1 & M2"];
 
@@ -278,7 +344,12 @@ export default function Dashboard() {
   const [filteredStudentData, setFilteredStudentData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [highlightedRow, setHighlightedRow] = useState(null);
-  console.log(searchTerm);
+
+  const tableData = {
+    all: filteredStudentData,
+    lh: filteredStudentData.filter((student) => student.gender === "Female"),
+    mh: filteredStudentData.filter((student) => student.gender === "Male"),
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -289,28 +360,33 @@ export default function Dashboard() {
     fetchData();
   }, []);
 
-  // useEffect(() => {
-  //   if (selectedSemester === "All") {
-  //     setFilteredStudentData(
-  //       allStudentData.filter((student) =>
-  //         student.name.toLowerCase().includes(searchTerm.toLowerCase())
-  //       )
-  //     );
-  //   } else {
-  //     const filteredData = allStudentData.filter(
-  //       (student) =>
-  //         student.sem === selectedSemester &&
-  //         student.name.toLowerCase().includes(searchTerm.toLowerCase())
-  //     );
-  //     console.log("works here ");
-  //     setFilteredStudentData(filteredData);
-  //   }
-  // }, [selectedSemester, allStudentData, setAllStudentData]);
+  useEffect(() => {
+    if (selectedSemester === "All") {
+      setFilteredStudentData(
+        allStudentData.filter((student) =>
+          student.name.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      );
+    } else {
+      const filteredData = allStudentData.filter(
+        (student) =>
+          student.sem === selectedSemester &&
+          student.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      console.log("works here ");
+      setFilteredStudentData(filteredData);
+    }
+  }, [selectedSemester, allStudentData, setAllStudentData]);
 
   function StudentListing() {
     return (
-      <div className="gap-y-5 flex-col flex w-[80vw] ">
+      <Tabs defaultValue="all" className="gap-y-5 flex-col flex w-[80vw] ">
         <div className="flex items-center w-full">
+          <TabsList>
+            <TabsTrigger value="all">All</TabsTrigger>
+            <TabsTrigger value="lh">LH</TabsTrigger>
+            <TabsTrigger value="mh">MH</TabsTrigger>
+          </TabsList>
           <div className="ml-auto flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -343,82 +419,69 @@ export default function Dashboard() {
             </Button>
           </div>
         </div>
-        <Card x-chunk="dashboard-05-chunk-3">
-          <div className="flex flex-row gap-2">
-            <CardHeader className="px-7">
-              <CardTitle>Student Details</CardTitle>
-            </CardHeader>
-            <form className="ml-auto mr-7 flex-1 sm:flex-initial items-center justify-center flex">
-              <div className="relative">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Search products..."
-                  className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px]"
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-            </form>
-          </div>
-
-          <CardContent className="">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  {Fields.map((field) => (
-                    <TableCell key={field} className="text-nowrap">
-                      {field}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredStudentData.map((student) => (
-                  <TableRow
-                    key={student._id}
-                    className={
-                      "bg-accent" +
-                      (student._id === highlightedRow
-                        ? " bg-green-200/40 transition ease-in-out delay-150"
-                        : "")
-                    }
-                  >
-                    <TableCell>{student.applNo}</TableCell>
-                    <TableCell>{student.admNo}</TableCell>
-                    <TableCell>{student.regNo}</TableCell>
-                    <TableCell>{student.name}</TableCell>
-                    <TableCell>{student.gender}</TableCell>
-                    <TableCell>{student.dob}</TableCell>
-                    <TableCell>{student.mobileNo}</TableCell>
-                    <TableCell>{student.email}</TableCell>
-                    <TableCell>{student.permanentAddress}</TableCell>
-                    <TableCell>{student.presentAddress}</TableCell>
-                    <TableCell>{student.pincode}</TableCell>
-                    <TableCell>{student.distance}</TableCell>
-                    <TableCell>{student.caste}</TableCell>
-                    <TableCell>{student.quota}</TableCell>
-                    <TableCell>{student.income}</TableCell>
-                    <TableCell>{student.branch}</TableCell>
-                    <TableCell>{student.sem}</TableCell>
-                    <TableCell>{student.cgpa}</TableCell>
-                    <TableCell>{student.score}</TableCell>
-                    <TableCell>
-                      {student.roomNo ? student.roomNo : "Not Allotted"}
-                    </TableCell>
-                    <TableCell>
-                      <EditStudentDialog
-                        student={student}
-                        setAllStudentData={setAllStudentData}
-                        setHighlightedRow={setHighlightedRow}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </div>
+        <TabsContent value="all">
+          <Card x-chunk="dashboard-05-chunk-3">
+            <div className="flex flex-row gap-2">
+              <CardHeader className="px-7">
+                <CardTitle>Student Details</CardTitle>
+              </CardHeader>
+              <form className="ml-auto mr-7 flex-1 sm:flex-initial items-center justify-center flex">
+                <div className="relative">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="search"
+                    placeholder="Search products..."
+                    className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px]"
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+              </form>
+            </div>
+            <StudentTable
+              {...{
+                studentData: tableData.all,
+                setAllStudentData,
+                setHighlightedRow,
+                highlightedRow,
+              }}
+            />
+          </Card>
+        </TabsContent>
+        <TabsContent value="mh">
+          <Card x-chunk="dashboard-05-chunk-3">
+            <div className="flex flex-row gap-2">
+              <CardHeader className="px-7">
+                <CardTitle>Student Details</CardTitle>
+              </CardHeader>
+            </div>
+            <StudentTable
+              {...{
+                studentData: tableData.mh,
+                setAllStudentData,
+                setHighlightedRow,
+                highlightedRow,
+              }}
+            />
+          </Card>
+        </TabsContent>
+        <TabsContent value="lh">
+          <Card x-chunk="dashboard-05-chunk-3">
+            <div className="flex flex-row gap-2">
+              <CardHeader className="px-7">
+                <CardTitle>Student Details</CardTitle>
+              </CardHeader>
+            </div>
+            <StudentTable
+              {...{
+                studentData: tableData.lh,
+                setAllStudentData,
+                setHighlightedRow,
+                highlightedRow,
+              }}
+            />
+          </Card>
+        </TabsContent>
+      </Tabs>
     );
   }
 

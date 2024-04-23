@@ -1,12 +1,17 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+"use client";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function App() {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push("/dashboard");
+  }, []);
+
   return (
-    <div className="flex flex-col items-center justify-center h-screen gap-y-5 bg-slate-950">
-      <Link href="/dashboard">
-        <Button>Go to Dashboard</Button>
-      </Link>
+    <div className="flex flex-col items-center justify-center h-screen gap-y-5">
+      <h1>Redirecting...</h1>
     </div>
   );
 }
