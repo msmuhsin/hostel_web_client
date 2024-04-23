@@ -1,10 +1,15 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  use,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 const AuthContext = createContext();
 import api from "@/lib/api";
-import { useRouter } from "next/navigation";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -75,15 +80,12 @@ export const useAuthContext = () => {
 
 export const ProtectedRoute = ({ children }) => {
   const pathname = usePathname();
+  const router = useRouter();
+  const { isloading, isAuthenticated } = useAuthContext();
 
-  const { isAuthenticated, isloading } = useAuthContext();
-
-  if (isloading || (!isAuthenticated && pathname !== "/login")) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen gap-y-5">
-        <h1>Loading...</h1>
-      </div>
-    );
+  if (isloading && (!isAuthenticated || pathname === "/login")) {
+    return <div>Loading...</div>;
   }
-  return children;
+
+  return isAuthenticated ? children : router.push("/login");
 };
