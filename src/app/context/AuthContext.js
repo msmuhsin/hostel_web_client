@@ -2,11 +2,13 @@
 
 import React, {
   createContext,
-  use,
   useContext,
   useEffect,
   useState,
 } from "react";
+
+
+
 const AuthContext = createContext();
 import api from "@/lib/api";
 import { usePathname, useRouter } from "next/navigation";

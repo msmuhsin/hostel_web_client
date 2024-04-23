@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export function LoginForm({ login, isAuthenticated }) {
   const [loginInfo, setLoginInfo] = useState({
@@ -26,6 +27,9 @@ export function LoginForm({ login, isAuthenticated }) {
     e.preventDefault();
     login(loginInfo);
     if (isAuthenticated) {
+      toast.success("Logged in successfully", {
+        position: "top-right",
+      });
       router.push("/dashboard");
     }
   };
@@ -55,9 +59,6 @@ export function LoginForm({ login, isAuthenticated }) {
           <div className="grid gap-2">
             <div className="flex items-center">
               <Label htmlFor="password">Password</Label>
-              <Link href="#" className="ml-auto inline-block text-sm underline">
-                Forgot your password?
-              </Link>
             </div>
             <Input
               id="password"
