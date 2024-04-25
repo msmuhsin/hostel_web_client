@@ -65,14 +65,14 @@ const Applicationform = () => {
   ];
 
   const branchoptions = [
-    { value: "ME", label: "ME" },
-    { value: "CE", label: "CE" },
-    { value: "BA", label: "BA" },
-    { value: "CSE", label: "CSE" },
-    { value: "ECE", label: "ECE" },
-    { value: "EEE", label: "EEE" },
-    { value: "PE", label: "PE" },
-    { value: "CHE", label: "CHE" },
+    { value: "MECHANICAL ENGINEERING", label: "MECHANICAL ENGINEERING" },
+    { value: "CIVIL ENGINEERING", label: "CIVIL ENGINEERING" },
+    { value: "BACHELOR OF ARCHITECTURE", label: "BACHELOR OF ARCHITECTURE" },
+    { value: "COMPUTER SCIENCE ENGINEERING ", label: "COMPUTER SCIENCE ENGINEERING " },
+    { value: "ELECTRONICS AND COMMUNICATION ENGINEERING  ", label: "ELECTRONICS AND COMMUNICATION ENGINEERING" },
+    { value: "ELECTRICAL AD ELECTRONIC ENGINEERING", label: "ELECTRICAL AD ELECTRONIC ENGINEERING" },
+    { value: "PRODUCTION ENGINEERING", label: "PRODUCTION ENGINEERING" },
+    { value: "CHEMICAL ENGINEERING", label: "CHEMICAL ENGINEERING" },
   ];
 
   const CalendarIcon = ({ className }) => (
