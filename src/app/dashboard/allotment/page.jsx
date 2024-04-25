@@ -78,6 +78,7 @@ const Allotmentpage = () => {
       );
       updatedSeats[item].value = calculatedSeats;
     });
+    
     setSeats(updatedSeats);
   }, [vacancy, seats]);
 
@@ -204,7 +205,7 @@ const Allotmentpage = () => {
             {quota.map((item, index) => (
               <TableRow key={index}>
                 <TableCell className="font-semibold">{item}</TableCell>
-                <TableCell>
+                <TableCell className="w-[140px]">
                   <Input type="number" value={seats[item].value} readOnly />
                 </TableCell>
                 <TableCell className="w-[140px] flex">
@@ -238,12 +239,12 @@ const Allotmentpage = () => {
           </TableBody>
         </Table>
         <div className="w-full flex justify-end">
-          <button
+          <Button
             className="bg-blue-500  mr-4 text-white px-4 py-2 rounded-md"
             type="button"
           >
             Submit
-          </button>
+          </Button>
         </div>
       </CardContent>
     </Card>
