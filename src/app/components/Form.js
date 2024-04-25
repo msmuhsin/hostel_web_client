@@ -49,9 +49,14 @@ const Applicationform = () => {
   const quotaoptions = [
     { value: "SC-APL", label: "SC-APL" },
     { value: "SC-BPL", label: "SC-BPL" },
-    { value: "ST", label: "ST" },
-    { value: "OBC", label: "OBC" },
-    { value: "General", label: "General" },
+    { value: "ST-APL", label: "ST-APL" },
+    { value: "ST-BPL", label: "ST-BPL" },
+    { value: "PH-APL", label: "PH-APL" },
+    { value: "PH-BPL", label: "PH-BPL" },
+    { value: "OBC-APL", label: "OBC-APL" },
+    { value: "OBC-BPL", label: "OBC-BPL" },
+    { value: "General-APL", label: "General-APL" },
+    { value: "General-BPL", label: "General-BPL" },
   ];
 
   const semoptions = [
