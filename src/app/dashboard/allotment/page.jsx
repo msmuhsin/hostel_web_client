@@ -21,6 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useEffect, useState } from "react";
+import { createAllotmentData } from "@/lib/functions";
 
 const Allotmentpage = () => {
   const quota = ["SC/ST/PH/BPL", "S1", "S3", "S5", "S7", "PG"];
@@ -49,12 +50,80 @@ const Allotmentpage = () => {
     LH: 0,
   });
 
+  const handleSubmit = async () => {
+    const data = {
+      AllotmentValuesForCalculation: {
+        MH: {
+          vacancyAvailable: vacancy.MH,
+          SC_ST_PH_BPL: {
+            percentage: seats.MH["SC/ST/PH/BPL"].percentage,
+            totalSeats: seats.MH["SC/ST/PH/BPL"].value,
+          },
+          S1: {
+            percentage: seats.MH.S1.percentage,
+            totalSeats: seats.MH.S1.value,
+          },
+          S3: {
+            percentage: seats.MH.S3.percentage,
+            totalSeats: seats.MH.S3.value,
+          },
+          S5: {
+            percentage: seats.MH.S5.percentage,
+            totalSeats: seats.MH.S5.value,
+          },
+          S7: {
+            percentage: seats.MH.S7.percentage,
+            totalSeats: seats.MH.S7.value,
+          },
+          PG: {
+            percentage: seats.MH.PG.percentage,
+            totalSeats: seats.MH.PG.value,
+          },
+        },
+        LH: {
+          vacancyAvailable: vacancy.LH,
+          SC_ST_PH_BPL: {
+            percentage: seats.LH["SC/ST/PH/BPL"].percentage,
+            totalSeats: seats.LH["SC/ST/PH/BPL"].value,
+          },
+          S1: {
+            percentage: seats.LH.S1.percentage,
+            totalSeats: seats.LH.S1.value,
+          },
+          S3: {
+            percentage: seats.LH.S3.percentage,
+            totalSeats: seats.LH.S3.value,
+          },
+          S5: {
+            percentage: seats.LH.S5.percentage,
+            totalSeats: seats.LH.S5.value,
+          },
+          S7: {
+            percentage: seats.LH.S7.percentage,
+            totalSeats: seats.LH.S7.value,
+          },
+          PG: {
+            percentage: seats.LH.PG.percentage,
+            totalSeats: seats.LH.PG.value,
+          },
+        },
+      },
+    };
+
+    const res = await createAllotmentData(data);
+
+    console.log(res);
+  };
+
   const updateSeatsAndAvailableSeats = (hostelType) => {
     const totalSeats = Object.values(seats[hostelType]).reduce(
       (acc, curr) => acc + curr.value,
       0
     );
-    setAvailableSeats({ [hostelType]: vacancy[hostelType] - totalSeats });
+    setAvailableSeats({
+      ...availableSeats,
+      [hostelType]: vacancy[hostelType] - totalSeats,
+    });
 
     const updatedSeats = seats[hostelType];
 
@@ -100,6 +169,7 @@ const Allotmentpage = () => {
 
   const handleInputChange = (e, hostelType) => {
     const inputValue = e.target.value;
+
     const parsedValue = parseInt(inputValue);
 
     if (!isNaN(parsedValue) && parsedValue >= 0) {
@@ -135,6 +205,8 @@ const Allotmentpage = () => {
         });
       }
     } else {
+      console.log("works here inside ");
+
       setVacancyDisplay({ ...vacancyDisplay, [hostelType]: "0" });
       setVacancy({ ...vacancy, [hostelType]: 0 });
     }
@@ -153,6 +225,26 @@ const Allotmentpage = () => {
             max="100"
             value={seatsDisplay[hostelType][item]}
             onChange={(e) => {
+              if (e.target.value === "") {
+                setSeatsDisplay({
+                  ...seatsDisplay,
+                  [hostelType]: {
+                    ...seatsDisplay[hostelType],
+                    [item]: "0",
+                  },
+                });
+
+                setSeats({
+                  ...seats,
+                  [hostelType]: {
+                    ...seats[hostelType],
+                    [item]: { value: 0, percentage: 0 },
+                  },
+                });
+
+                return;
+              }
+
               const maxPossiblePercentage =
                 100 -
                 Object.values(seats[hostelType]).reduce(
@@ -224,7 +316,7 @@ const Allotmentpage = () => {
       <CardFooter>
         <Button
           className="w-full"
-          onClick={() => console.log("Save")}
+          onClick={handleSubmit}
           disabled={
             vacancy.MH === 0 ||
             vacancy.LH === 0 ||

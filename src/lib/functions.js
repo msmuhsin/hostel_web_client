@@ -16,4 +16,14 @@ function updateStudentData(data, id) {
   return api.put(`/student/${id}`, data);
 }
 
-export { createStudentData, getAllStudents, updateStudentData, register };
+async function createAllotmentData(data) {
+  return await api.post("/allotment", data);
+}
+
+export {
+  createStudentData,
+  getAllStudents,
+  updateStudentData,
+  register,
+  createAllotmentData,
+};
