@@ -59,26 +59,15 @@ const Allotmentpage = () => {
             percentage: seats.MH["SC/ST/PH/BPL"].percentage,
             totalSeats: seats.MH["SC/ST/PH/BPL"].value,
           },
-          S1: {
-            percentage: seats.MH.S1.percentage,
-            totalSeats: seats.MH.S1.value,
-          },
-          S3: {
-            percentage: seats.MH.S3.percentage,
-            totalSeats: seats.MH.S3.value,
-          },
-          S5: {
-            percentage: seats.MH.S5.percentage,
-            totalSeats: seats.MH.S5.value,
-          },
-          S7: {
-            percentage: seats.MH.S7.percentage,
-            totalSeats: seats.MH.S7.value,
-          },
-          PG: {
-            percentage: seats.MH.PG.percentage,
-            totalSeats: seats.MH.PG.value,
-          },
+          ...Object.fromEntries(
+            quota.slice(1).map((item) => [
+              item,
+              {
+                percentage: seats.MH[item].percentage,
+                totalSeats: seats.MH[item].value,
+              },
+            ])
+          ),
         },
         LH: {
           vacancyAvailable: vacancy.LH,
@@ -86,32 +75,19 @@ const Allotmentpage = () => {
             percentage: seats.LH["SC/ST/PH/BPL"].percentage,
             totalSeats: seats.LH["SC/ST/PH/BPL"].value,
           },
-          S1: {
-            percentage: seats.LH.S1.percentage,
-            totalSeats: seats.LH.S1.value,
-          },
-          S3: {
-            percentage: seats.LH.S3.percentage,
-            totalSeats: seats.LH.S3.value,
-          },
-          S5: {
-            percentage: seats.LH.S5.percentage,
-            totalSeats: seats.LH.S5.value,
-          },
-          S7: {
-            percentage: seats.LH.S7.percentage,
-            totalSeats: seats.LH.S7.value,
-          },
-          PG: {
-            percentage: seats.LH.PG.percentage,
-            totalSeats: seats.LH.PG.value,
-          },
+          ...Object.fromEntries(
+            quota.slice(1).map((item) => [
+              item,
+              {
+                percentage: seats.LH[item].percentage,
+                totalSeats: seats.LH[item].value,
+              },
+            ])
+          ),
         },
       },
     };
-
     const res = await createAllotmentData(data);
-
     console.log(res);
   };
 
@@ -205,8 +181,6 @@ const Allotmentpage = () => {
         });
       }
     } else {
-      console.log("works here inside ");
-
       setVacancyDisplay({ ...vacancyDisplay, [hostelType]: "0" });
       setVacancy({ ...vacancy, [hostelType]: 0 });
     }
