@@ -148,7 +148,7 @@ const validationSchema = Yup.object({
   // cannot be negative
   Income: Yup.string().required("Income is required").min(0),
   Branch: Yup.string()
-    .oneOf(["ME", "CE", "BA", "CSE", "EEE", "ECE", "PE", "CHE"])
+    .oneOf(["MECHANICAL ENGINEERING", "CIVIL ENGINEERING", "BACHELOR OF ARCHITECTURE", "COMPUTER SCIENCE ENGINEERING", "ELECTRICAL AND ELECTRONICS ENGINEERING", "ELECTRONICS AND COMMUNICATION ENGINEERING", "PRODUCTION ENGINEERING", "CHEMICAL ENGINEERING"])
     .required("Branch is required"),
   Sem: Yup.string()
     .oneOf(["S1", "S3", "S5", "S7", "S9", "M1", "M2"])
