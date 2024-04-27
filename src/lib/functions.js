@@ -8,12 +8,20 @@ function getAllStudents() {
   return api.get("/student");
 }
 
+async function getAllAllotedStudents() {
+  return api.get("/allotment");
+}
+
 function register(data) {
   return api.post("/user/register", data);
 }
 
 function updateStudentData(data, id) {
   return api.put(`/student/${id}`, data);
+}
+
+function updateStudentRoom(data, id){
+  return api.put(`/student/roomallocation/${id}`, data);
 }
 
 async function createAllotmentData(data) {
@@ -26,4 +34,6 @@ export {
   updateStudentData,
   register,
   createAllotmentData,
+  getAllAllotedStudents,
+  updateStudentRoom
 };

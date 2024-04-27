@@ -26,6 +26,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { File, ListFilter, Search } from "lucide-react";
+import { CSVLink } from "react-csv";
 
 import {
   Dialog,
@@ -58,29 +59,10 @@ const Fields = [
   "Semester",
   "CGPA",
   "Score",
+  "Allotted",
   "Room No",
   "",
 ];
-// const FieldsEdit = [
-//   "Appl No",
-//   "Admn No",
-//   "Reg No",
-//   "Name",
-//   "Gender",
-//   "DOB",
-//   "Mob No",
-//   "Email",
-//   "Permanent Address",
-//   "Present Address",
-//   "Pincode",
-//   "Distance",
-//   "Caste",
-//   "Quota",
-//   "Income",
-//   "Branch",
-//   "Semester",
-//   "CGPA",
-// ];
 
 const StudentFieldName = [
   "applNo",
@@ -221,7 +203,7 @@ export function EditStudentDialog({
           <DialogTitle>Edit student Data</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 overflow-y-scroll py-2 no-scrollbar w-full pr-1 h-[70vh]">
-          {Fields.slice(0, Fields.length - 3).map((field, index) => (
+          {Fields.slice(0, Fields.length - 4).map((field, index) => (
             <div className="grid grid-cols-3 items-center gap-4" key={field}>
               <Label htmlFor={field} className="col-span-1">
                 {field}
@@ -318,8 +300,9 @@ function StudentTable({
               <TableCell>{student.sem}</TableCell>
               <TableCell>{student.cgpa}</TableCell>
               <TableCell>{student.score}</TableCell>
+              <TableCell>{student.allotted ? "Yes" : "No"}</TableCell>
               <TableCell>
-                {student.roomNo ? student.roomNo : "Not Allotted"}
+                {student.roomNo ? student.roomNo : "Not Available"}
               </TableCell>
               <TableCell>
                 <EditStudentDialog
@@ -339,6 +322,7 @@ function StudentTable({
 export default function Dashboard() {
   const semesters = ["All", "S1", "S3", "S5", "S7", "S9", "M1 & M2"];
 
+  const [exportData, setExportData] = useState({ data: [], headers: [] });
   const [selectedSemester, setSelectedSemester] = useState("All");
   const [allStudentData, setAllStudentData] = useState([]);
   const [filteredStudentData, setFilteredStudentData] = useState([]);
@@ -351,6 +335,64 @@ export default function Dashboard() {
     mh: filteredStudentData.filter((student) => student.gender === "Male"),
   };
 
+  const getExportData = async () => {
+    try {
+      const headers = [
+        { label: "Application No", key: "applNo" },
+        { label: "Admission No", key: "admNo" },
+        { label: "Registration No", key: "regNo" },
+        { label: "Name", key: "name" },
+        { label: "Gender", key: "gender" },
+        { label: "DOB", key: "dob" },
+        { label: "Email", key: "email" },
+        { label: "Mobile No", key: "mobileNo" },
+        { label: "Permanent Address", key: "permanentAddress" },
+        { label: "Present Address", key: "presentAddress" },
+        { label: "Pincode", key: "pincode" },
+        { label: "Distance", key: "distance" },
+        { label: "Caste", key: "caste" },
+        { label: "Quota", key: "quota" },
+        { label: "Income", key: "income" },
+        { label: "Branch", key: "branch" },
+        { label: "Semester", key: "sem" },
+        { label: "CGPA", key: "cgpa" },
+        { label: "Score", key: "score" },
+      ];
+
+      const data = [];
+
+      filteredStudentData.forEach((student) => {
+        data.push({
+          applNo: student.applNo,
+          admNo: student.admNo,
+          regNo: student.regNo,
+          name: student.name,
+          gender: student.gender,
+          dob: student.dob,
+          email: student.email,
+          mobileNo: student.mobileNo,
+          permanentAddress: student.permanentAddress,
+          presentAddress: student.presentAddress,
+          pincode: student.pincode,
+          distance: student.distance,
+          caste: student.caste,
+          quota: student.quota,
+          income: student.income,
+          branch: student.branch,
+          sem: student.sem,
+          cgpa: student.cgpa,
+          score: student.score,
+        });
+      });
+
+      setExportData({ data, headers });
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       const res = await getAllStudents();
@@ -359,6 +401,10 @@ export default function Dashboard() {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    getExportData();
+  }, [filteredStudentData]);
 
   useEffect(() => {
     if (selectedSemester === "All") {
@@ -373,7 +419,6 @@ export default function Dashboard() {
           student.sem === selectedSemester &&
           student.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
-      console.log("works here ");
       setFilteredStudentData(filteredData);
     }
   }, [selectedSemester, allStudentData, setAllStudentData]);
@@ -413,10 +458,21 @@ export default function Dashboard() {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button size="sm" variant="outline" className="h-7 gap-1 text-sm">
-              <File className="h-3.5 w-3.5" />
-              <span className="sr-only sm:not-sr-only">Export</span>
-            </Button>
+            <CSVLink
+              data={exportData.data}
+              headers={exportData.headers}
+              asyncOnClick={true}
+              onClick={(event, done) =>
+                getExportData().then(() => {
+                  done();
+                })
+              }
+            >
+              <Button size="sm" variant="outline" className="h-7 gap-1 text-sm">
+                <File className="h-3.5 w-3.5" />
+                <span className="sr-only sm:not-sr-only">Export</span>
+              </Button>
+            </CSVLink>
           </div>
         </div>
         <TabsContent value="all">
@@ -425,7 +481,7 @@ export default function Dashboard() {
               <CardHeader className="px-7">
                 <CardTitle>Student Details</CardTitle>
               </CardHeader>
-              <form className="ml-auto mr-7 flex-1 sm:flex-initial items-center justify-center flex">
+              {/* <form className="ml-auto mr-7 flex-1 sm:flex-initial items-center justify-center flex">
                 <div className="relative">
                   <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -435,7 +491,7 @@ export default function Dashboard() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
-              </form>
+              </form> */}
             </div>
             <StudentTable
               {...{
