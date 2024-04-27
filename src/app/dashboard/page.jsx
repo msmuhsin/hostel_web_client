@@ -58,6 +58,7 @@ const Fields = [
   "Semester",
   "CGPA",
   "Score",
+  "Allotted",
   "Room No",
   "",
 ];
@@ -221,7 +222,7 @@ export function EditStudentDialog({
           <DialogTitle>Edit student Data</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 overflow-y-scroll py-2 no-scrollbar w-full pr-1 h-[70vh]">
-          {Fields.slice(0, Fields.length - 3).map((field, index) => (
+          {Fields.slice(0, Fields.length - 4).map((field, index) => (
             <div className="grid grid-cols-3 items-center gap-4" key={field}>
               <Label htmlFor={field} className="col-span-1">
                 {field}
@@ -318,8 +319,9 @@ function StudentTable({
               <TableCell>{student.sem}</TableCell>
               <TableCell>{student.cgpa}</TableCell>
               <TableCell>{student.score}</TableCell>
+              <TableCell>{student.allotted ? "Yes" : "No"}</TableCell>
               <TableCell>
-                {student.roomNo ? student.roomNo : "Not Allotted"}
+                {student.roomNo ? student.roomNo : "Not Available"}
               </TableCell>
               <TableCell>
                 <EditStudentDialog
@@ -373,7 +375,6 @@ export default function Dashboard() {
           student.sem === selectedSemester &&
           student.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
-      console.log("works here ");
       setFilteredStudentData(filteredData);
     }
   }, [selectedSemester, allStudentData, setAllStudentData]);
@@ -425,7 +426,7 @@ export default function Dashboard() {
               <CardHeader className="px-7">
                 <CardTitle>Student Details</CardTitle>
               </CardHeader>
-              <form className="ml-auto mr-7 flex-1 sm:flex-initial items-center justify-center flex">
+              {/* <form className="ml-auto mr-7 flex-1 sm:flex-initial items-center justify-center flex">
                 <div className="relative">
                   <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -435,7 +436,7 @@ export default function Dashboard() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
-              </form>
+              </form> */}
             </div>
             <StudentTable
               {...{

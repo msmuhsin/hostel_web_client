@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import toast from "react-hot-toast";
 
 import {
   Table,
@@ -22,6 +23,7 @@ import {
 } from "@/components/ui/table";
 import { useEffect, useState } from "react";
 import { createAllotmentData } from "@/lib/functions";
+import { RotateCcw } from "lucide-react";
 
 const Allotmentpage = () => {
   const quota = ["SC/ST/PH/BPL", "S1", "S3", "S5", "S7", "PG"];
@@ -88,7 +90,17 @@ const Allotmentpage = () => {
       },
     };
     const res = await createAllotmentData(data);
-    console.log(res);
+
+    if (res.data.success) {
+      console.log(res.data.message);
+      toast.success("Allotment data added successfully", {
+        position: "top-right",
+      });
+    } else {
+      toast.error("Allotment data could not be added", {
+        position: "top-right",
+      });
+    }
   };
 
   const updateSeatsAndAvailableSeats = (hostelType) => {
@@ -272,6 +284,45 @@ const Allotmentpage = () => {
                   value={availableSeats[hostelType]}
                   readOnly
                 />
+              </div>
+              <div className="flex justify-end">
+                <Button
+                  className="mt-auto"
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => {
+                    setVacancyDisplay({
+                      ...vacancyDisplay,
+                      [hostelType]: "0",
+                    });
+                    setVacancy({ ...vacancy, [hostelType]: 0 });
+                    setAvailableSeats({ ...availableSeats, [hostelType]: 0 });
+                    setSeatsDisplay({
+                      ...seatsDisplay,
+                      [hostelType]: {
+                        "SC/ST/PH/BPL": "0",
+                        S1: "0",
+                        S3: "0",
+                        S5: "0",
+                        S7: "0",
+                        PG: "0",
+                      },
+                    });
+                    setSeats({
+                      ...seats,
+                      [hostelType]: {
+                        "SC/ST/PH/BPL": { value: 0, percentage: 0 },
+                        S1: { value: 0, percentage: 0 },
+                        S3: { value: 0, percentage: 0 },
+                        S5: { value: 0, percentage: 0 },
+                        S7: { value: 0, percentage: 0 },
+                        PG: { value: 0, percentage: 0 },
+                      },
+                    });
+                  }}
+                >
+                  <RotateCcw size={16} />
+                </Button>
               </div>
             </div>
             <Table>

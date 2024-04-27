@@ -8,6 +8,10 @@ function getAllStudents() {
   return api.get("/student");
 }
 
+async function getAllAllotedStudents() {
+  return api.get("/allotment");
+}
+
 function register(data) {
   return api.post("/user/register", data);
 }
@@ -26,4 +30,5 @@ export {
   updateStudentData,
   register,
   createAllotmentData,
+  getAllAllotedStudents,
 };
