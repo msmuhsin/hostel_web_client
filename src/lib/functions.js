@@ -20,6 +20,10 @@ function updateStudentData(data, id) {
   return api.put(`/student/${id}`, data);
 }
 
+function updateStudentRoom(data, id){
+  return api.put(`/student/roomallocation/${id}`, data);
+}
+
 async function createAllotmentData(data) {
   return await api.post("/allotment", data);
 }
@@ -31,4 +35,5 @@ export {
   register,
   createAllotmentData,
   getAllAllotedStudents,
+  updateStudentRoom
 };

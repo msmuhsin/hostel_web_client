@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CSVLink, CSVDownload } from "react-csv";
 import React from "react";
 import {
   Table,
@@ -25,7 +26,8 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { File, ListFilter } from "lucide-react";
-import { getAllAllotedStudents } from "@/lib/functions";
+import { getAllAllotedStudents, updateStudentRoom } from "@/lib/functions";
+import toast from "react-hot-toast";
 
 const Fields = [
   "Appl No",
@@ -78,7 +80,24 @@ const studentEditFields = [
   "roomNo",
 ];
 
+const fieldLabels = {
+  allotted: "Allotted",
+  roomNo: "Room No",
+  applNo: "Application No",
+  admNo: "Admission No",
+  regNo: "Registration No",
+  name: "Name",
+  gender: "Gender",
+  mobileNo: "Mobile No",
+  branch: "Branch",
+  sem: "Semester",
+  cgpa: "CGPA",
+  score: "Score",
+};
+
 export default function RoomAllocationPage() {
+  const [exportData, setExportData] = useState({ headers: [], data: [] });
+
   const [allotmentData, setAllotmentData] = useState({
     MH: {
       S1: {
@@ -184,10 +203,87 @@ export default function RoomAllocationPage() {
     },
   });
 
+  const getAllotmentData = async () => {
+    const res = await getAllAllotedStudents();
+    setAllotmentData(res.data);
+  };
+
+  const getExportData = async () => {
+    const headers = [
+      { label: "Application No", key: "applNo" },
+      { label: "Admission No", key: "admNo" },
+      { label: "Registration No", key: "regNo" },
+      { label: "Name", key: "name" },
+      { label: "Gender", key: "gender" },
+      { label: "Mobile No", key: "mobileNo" },
+      { label: "Pincode", key: "pincode" },
+      { label: "Distance", key: "distance" },
+      { label: "Caste", key: "caste" },
+      { label: "Quota", key: "quota" },
+      { label: "Income", key: "income" },
+      { label: "Branch", key: "branch" },
+      { label: "Semester", key: "sem" },
+    ];
+
+    const data = [];
+
+    try {
+      // Loop through MH data
+      Object.entries(allotmentData.MH).forEach(([semester, categoriesData]) => {
+        Object.entries(categoriesData).forEach(([category, students]) => {
+          students.forEach((student) => {
+            data.push({
+              applNo: student.applNo,
+              admNo: student.admNo,
+              regNo: student.regNo,
+              name: student.name,
+              gender: student.gender,
+              mobileNo: student.mobileNo,
+              pincode: student.pincode,
+              distance: student.distance,
+              caste: student.caste,
+              quota: student.quota,
+              income: student.income,
+              branch: student.branch,
+              sem: student.sem,
+            });
+          });
+        });
+      });
+
+      Object.entries(allotmentData.LH).forEach(([semester, categoriesData]) => {
+        Object.entries(categoriesData).forEach(([category, students]) => {
+          students.forEach((student) => {
+            data.push({
+              applNo: student.applNo,
+              admNo: student.admNo,
+              regNo: student.regNo,
+              name: student.name,
+              gender: student.gender,
+              mobileNo: student.mobileNo,
+              pincode: student.pincode,
+              distance: student.distance,
+              caste: student.caste,
+              quota: student.quota,
+              income: student.income,
+              branch: student.branch,
+              sem: student.sem,
+            });
+          });
+        });
+      });
+
+      setExportData({ headers, data });
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       const res = await getAllAllotedStudents();
-      console.log(res.data);
       setAllotmentData(res.data);
     };
 
@@ -198,7 +294,23 @@ export default function RoomAllocationPage() {
     const [studentData, setStudentData] = useState(student);
 
     const handleSubmit = async () => {
-      alert(studentData);
+      const data = {
+        RoomNo: studentData.roomNo,
+      };
+
+      const res = await updateStudentRoom(data, student._id);
+
+      if (res.status == 200 && res.data.success == true) {
+        toast.success("Room Updated successfully", {
+          position: "top-right",
+        });
+
+        await getAllotmentData();
+      } else {
+        toast.error("Failed to update room", {
+          position: "top-right",
+        });
+      }
     };
 
     return (
@@ -216,7 +328,7 @@ export default function RoomAllocationPage() {
             {studentEditFields.map((field) => (
               <div className="grid grid-cols-3 items-center gap-4" key={field}>
                 <Label htmlFor={field} className="col-span-1">
-                  {field}
+                  {fieldLabels[field]}
                 </Label>
                 <Input
                   id={field}
@@ -241,14 +353,13 @@ export default function RoomAllocationPage() {
             ))}
           </div>
           <DialogFooter>
-            <div>{studentData.roomNo}</div>
             <div className="flex items-center">
               <Button
                 type="submit"
                 onClick={handleSubmit}
                 disabled={studentData.roomNo == ""}
               >
-                {studentData.roomNo == "" ? "Save" : "Update"}
+                {student.roomNo == "" ? "Save" : "Update"}
               </Button>
             </div>
           </DialogFooter>
@@ -318,14 +429,25 @@ export default function RoomAllocationPage() {
                 <TabsTrigger value="mh">MH</TabsTrigger>
               </TabsList>
               <div className="ml-auto flex items-center gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-7 gap-1 text-sm"
+                <CSVLink
+                  data={exportData.data}
+                  headers={exportData.headers}
+                  asyncOnClick={true}
+                  onClick={(event, done) =>
+                    getExportData().then(() => {
+                      done();
+                    })
+                  }
                 >
-                  <File className="h-3.5 w-3.5" />
-                  <span className="sr-only sm:not-sr-only">Export</span>
-                </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-7 gap-1 text-sm"
+                  >
+                    <File className="h-3.5 w-3.5" />
+                    <span className="sr-only sm:not-sr-only">Export</span>
+                  </Button>
+                </CSVLink>
               </div>
             </div>
             <TabsContent value="all">
