@@ -397,7 +397,7 @@ const Allotmentpage = () => {
     ));
 
   return (
-    <div className="flex flex-row gap-x-4 w-full justify-center h-auto">
+    <div className="flex flex-row gap-x-4 w-screen justify-center h-auto">
       <Card className="h-full">
         <CardHeader>
           <CardTitle>Vacancy</CardTitle>
@@ -408,6 +408,9 @@ const Allotmentpage = () => {
         <div className="flex flex-row ">
           {["MH", "LH"].map((hostelType) => (
             <CardContent key={hostelType}>
+              <CardTitle className="mb-5 text-lg" htmlFor={`vacancy-${hostelType}`}>
+                {hostelType}
+              </CardTitle>
               <div className="flex gap-4 pb-2">
                 <div className="flex space-y-2 flex-col">
                   <Label

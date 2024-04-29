@@ -12,7 +12,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isloading, setLoading] = useState(true);
   const router = useRouter();
-  const pathname = usePathname();
 
   async function loadUserFromLocalStorage() {
     const token = localStorage.getItem("token");

@@ -271,21 +271,24 @@ function StudentTable({
   highlightedRow,
 }) {
   return (
-    <CardContent>
+    <CardContent className="max-h-[72vh] overflow-auto no-scrollbar">
       <Table>
-        <TableHeader>
+        <TableHeader className=" bg-blue-300 font-bold dark:bg-blue-300/50">
           <TableRow>
+            <TableCell key={"slno"} className="text-nowrap ">
+              Sl No
+            </TableCell>
             {Fields.map((field) => (
-              <TableCell key={field} className="text-nowrap">
+              <TableCell key={field} className="text-nowrap ">
                 {field}
               </TableCell>
             ))}
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody className="">
           {studentData
             .sort((a, b) => b.score - a.score)
-            .map((student) => (
+            .map((student, index) => (
               <TableRow
                 key={student._id}
                 className={
@@ -295,6 +298,7 @@ function StudentTable({
                     : "")
                 }
               >
+                <TableCell>{index + 1}</TableCell>
                 <TableCell>{student.applNo}</TableCell>
                 <TableCell>{student.admNo}</TableCell>
                 <TableCell>{student.regNo}</TableCell>
@@ -327,48 +331,6 @@ function StudentTable({
                 </TableCell>
               </TableRow>
             ))}
-          {studentData.map((student) => (
-            <TableRow
-              key={student._id}
-              className={
-                "bg-accent" +
-                (student._id === highlightedRow
-                  ? " bg-green-200/40 transition ease-in-out delay-150"
-                  : "")
-              }
-            >
-              <TableCell className="text-xl">{student.applNo}</TableCell>
-              <TableCell className="text-xl">{student.admNo}</TableCell>
-              <TableCell className="text-xl">{student.regNo}</TableCell>
-              <TableCell className="text-xl">{student.name}</TableCell>
-              <TableCell className="text-xl">{student.gender}</TableCell>
-              <TableCell className="text-xl">{student.dob}</TableCell>
-              <TableCell className="text-xl">{student.mobileNo}</TableCell>
-              <TableCell className="text-xl">{student.email}</TableCell>
-              <TableCell className="text-xl">{student.permanentAddress}</TableCell>
-              <TableCell className="text-xl">{student.presentAddress}</TableCell>
-              <TableCell className="text-xl">{student.pincode}</TableCell>
-              <TableCell className="text-xl">{student.distance}</TableCell>
-              <TableCell className="text-xl">{student.caste}</TableCell>
-              <TableCell className="text-xl">{student.quota}</TableCell>
-              <TableCell className="text-xl">{student.income}</TableCell>
-              <TableCell className="text-xl">{student.branch}</TableCell>
-              <TableCell className="text-xl">{student.sem}</TableCell>
-              <TableCell className="text-xl">{student.cgpa}</TableCell>
-              <TableCell className="text-xl">{student.score}</TableCell>
-              <TableCell className="text-xl">{student.allotted ? "Yes" : "No"}</TableCell>
-              <TableCell>
-                {student.roomNo ? student.roomNo : "Not Available"}
-              </TableCell>
-              <TableCell>
-                <EditStudentDialog
-                  student={student}
-                  setAllStudentData={setAllStudentData}
-                  setHighlightedRow={setHighlightedRow}
-                />
-              </TableCell>
-            </TableRow>
-          ))}
         </TableBody>
       </Table>
     </CardContent>
@@ -463,12 +425,12 @@ export default function Dashboard() {
     return (
       <Tabs
         value={selectedTab}
-        className="gap-y-5 flex-col flex w-[80vw]"
+        className="gap-y-5 flex-col flex justify-center "
         onValueChange={(val) => {
           setSelectedTab(val);
         }}
       >
-        <div className="flex items-center w-full">
+        <div className="flex w-[90vw]">
           <TabsList>
             <TabsTrigger value="all">All</TabsTrigger>
             <TabsTrigger value="lh">LH</TabsTrigger>
@@ -511,9 +473,9 @@ export default function Dashboard() {
             </Button>
           </div>
         </div>
-        <TabsContent value="all" >
-          <Card x-chunk="dashboard-05-chunk-3" >
-            <div className="flex flex-row gap-2">
+        <TabsContent value="all">
+          <Card x-chunk="dashboard-05-chunk-3" className="w-auto sm:w-[90vw] ">
+            <div className="flex flex-row gap-2 ">
               <CardHeader className="px-7">
                 <CardTitle>Student Details</CardTitle>
               </CardHeader>
@@ -530,7 +492,7 @@ export default function Dashboard() {
               </form> */}
             </div>
             <StudentTable
-            className="bg-black"
+              className="bg-black"
               {...{
                 studentData: tableData.all,
                 setAllStudentData,
@@ -541,14 +503,13 @@ export default function Dashboard() {
           </Card>
         </TabsContent>
         <TabsContent value="mh">
-          <Card x-chunk="dashboard-05-chunk-3">
+          <Card x-chunk="dashboard-05-chunk-3" className="w-auto sm:w-[90vw]">
             <div className="flex flex-row gap-2">
               <CardHeader className="px-7">
                 <CardTitle>Student Details</CardTitle>
               </CardHeader>
-            </div >
+            </div>
             <StudentTable
-            
               {...{
                 studentData: tableData.mh,
                 setAllStudentData,
@@ -559,7 +520,7 @@ export default function Dashboard() {
           </Card>
         </TabsContent>
         <TabsContent value="lh">
-          <Card x-chunk="dashboard-05-chunk-3">
+          <Card x-chunk="dashboard-05-chunk-3" className="w-auto sm:w-[90vw]">
             <div className="flex flex-row gap-2">
               <CardHeader className="px-7">
                 <CardTitle>Student Details</CardTitle>
@@ -580,10 +541,8 @@ export default function Dashboard() {
   }
 
   return (
-    <main>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <StudentListing />
-      </div>
+    <main className="w-screen flex items-center justify-center flex-row">
+      <StudentListing />
     </main>
   );
 }
