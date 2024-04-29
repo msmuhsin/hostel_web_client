@@ -235,6 +235,8 @@ export default function RoomAllocationPage() {
               Income: student.income,
               Branch: student.branch,
               Semester: student.sem,
+              "Room No":
+                student.roomNo != "" ? student.roomNo : "Not Available",
             });
           });
         });
@@ -257,7 +259,8 @@ export default function RoomAllocationPage() {
               Income: student.income,
               Branch: student.branch,
               Semester: student.sem,
-              "Room No": student.roomNo ? student.roomNo : "Not Available",
+              "Room No":
+                student.roomNo != "" ? student.roomNo : "Not Available",
             });
           });
         });
