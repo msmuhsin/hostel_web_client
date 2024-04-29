@@ -196,18 +196,18 @@ const Allotmentpage = () => {
                 </TableCaption>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="border-r"></TableHead>
-                    <TableHead className="bg-gray-100">General</TableHead>
-                    <TableHead className="bg-gray-100">SC</TableHead>
-                    <TableHead className="bg-gray-100">ST</TableHead>
-                    <TableHead className="bg-gray-100">PH</TableHead>
-                    <TableHead className="bg-gray-100">BPL</TableHead>
+                    <TableHead className="border-r "></TableHead>
+                    <TableHead className="bg-muted">General</TableHead>
+                    <TableHead className="bg-muted">SC</TableHead>
+                    <TableHead className="bg-muted">ST</TableHead>
+                    <TableHead className="bg-muted">PH</TableHead>
+                    <TableHead className="bg-muted">BPL</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {AllotmentData.map((row) => (
                     <TableRow key={row.Sem}>
-                      <TableCell className="font-medium border-r bg-gray-100">
+                      <TableCell className="font-medium border-r bg-muted">
                         {row.Sem}
                       </TableCell>
                       <TableCell className="text-center">
