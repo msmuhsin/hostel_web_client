@@ -55,7 +55,7 @@
    - Deadline: [Deadline]
    - Assigned To: [Developer Name]
 
-4. *POST /student/scorecalculator*
+4. *POST /student/scorecalculaton*
    - Description:calculation of score of a student according to weightage
    - Deadline: [Deadline]
    - Assigned To:developer Name
@@ -66,7 +66,7 @@
    - Assigned To:developer Name
 
 6. *POST /room/allotment*
-   - Description:allotmet of a room
+   - Description:allotment of a room
    - Deadline: [Deadline]
    - Assigned To:developer Name
    
