@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CSVLink, CSVDownload } from "react-csv";
 import React from "react";
 import {
   Table,
@@ -96,7 +95,7 @@ const fieldLabels = {
 };
 
 export default function RoomAllocationPage() {
-  const [exportData, setExportData] = useState({ headers: [], data: [] });
+  const [selectedTab, setSelectedTab] = useState("all");
 
   const [allotmentData, setAllotmentData] = useState({
     MH: {
@@ -205,7 +204,46 @@ export default function RoomAllocationPage() {
 
   const getAllotmentData = async () => {
     const res = await getAllAllotedStudents();
-    setAllotmentData(res.data);
+    if (res.data.success == true && res.status == 200) {
+      setAllotmentData(res.data.allotmentData);
+    } else {
+      toast.error("Failed to fetch data", {
+        position: "top-right",
+      });
+    }
+  };
+
+  const exportToExcel = () => {
+    try {
+      let worksheet = null;
+
+      if (selectedTab === "all") {
+        worksheet = XLSX.utils.json_to_sheet(filteredStudentData);
+      } else if (selectedTab === "lh") {
+        const lhData = filteredStudentData.filter(
+          (student) => student.gender === "Female"
+        );
+        worksheet = XLSX.utils.json_to_sheet(lhData);
+      } else if (selectedTab === "mh") {
+        const mhData = filteredStudentData.filter(
+          (student) => student.gender === "Male"
+        );
+        worksheet = XLSX.utils.json_to_sheet(mhData);
+      }
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+
+      const excelBuffer = XLSX.write(workbook, {
+        bookType: "xlsx",
+        type: "array",
+      });
+      const blob = new Blob([excelBuffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+      });
+
+      saveAs(blob, "data.xlsx");
+    } catch (error) {}
   };
 
   const getExportData = async () => {
@@ -273,7 +311,6 @@ export default function RoomAllocationPage() {
         });
       });
 
-      setExportData({ headers, data });
       return true;
     } catch (error) {
       console.error(error);
@@ -283,8 +320,29 @@ export default function RoomAllocationPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await getAllAllotedStudents();
-      setAllotmentData(res.data);
+      try {
+        const res = await getAllAllotedStudents();
+        if (res.status === 200 && res.data.success === true) {
+          setAllotmentData(res.data.allotmentData);
+          toast.success("Data fetched successfully", {
+            position: "top-right",
+          });
+        } else {
+          toast.error("Failed to fetch data", {
+            position: "top-right",
+          });
+        }
+      } catch (error) {
+        if (error.response && error.response.status === 404) {
+          toast.error("Resource not found", {
+            position: "top-right",
+          });
+        } else {
+          toast.error("An error occurred while fetching data", {
+            position: "top-right",
+          });
+        }
+      }
     };
 
     fetchData();
@@ -373,34 +431,78 @@ export default function RoomAllocationPage() {
       <React.Fragment key={category}>
         {students.length > 0 && (
           <React.Fragment>
-            <TableRow className="bg-accent w-full text-center">
-              <TableCell colSpan={Fields.length + 1} className="text-base">
-                {category}
-              </TableCell>
-            </TableRow>
-            {students.map((student) => (
-              <TableRow key={student._id}>
-                {studentFields.map((field) => (
-                  <TableCell
-                    key={`${student._id}-${field}`}
-                    className={field == "allotted" ? "text-center" : ""}
-                  >
-                    {field === "allotted"
-                      ? student[field] === true
-                        ? "Yes"
-                        : "No"
-                      : field == "roomNo"
-                        ? student[field]
-                          ? student[field]
-                          : "Not Available"
-                        : student[field]}
-                  </TableCell>
-                ))}
-                <TableCell>
-                  <EditStudentDialog student={student} />
+            {selectedTab === "room-allotted" &&
+            students.filter((student) => student.roomNo !== "").length > 0 ? (
+              <TableRow className="bg-accent w-full text-center">
+                <TableCell colSpan={Fields.length + 1} className="text-base">
+                  {category}
                 </TableCell>
               </TableRow>
-            ))}
+            ) : null}
+
+            {selectedTab != "room-allotted" && (
+              <TableRow className="bg-accent w-full text-center">
+                <TableCell colSpan={Fields.length + 1} className="text-base">
+                  {category}
+                </TableCell>
+              </TableRow>
+            )}
+
+            {selectedTab === "room-allotted" ? (
+              <>
+                {students
+                  .filter((student) => student.roomNo !== "")
+                  .map((student) => (
+                    <TableRow key={student._id}>
+                      {studentFields.map((field) => (
+                        <TableCell
+                          key={`${student._id}-${field}`}
+                          className={field === "allotted" ? "text-center" : ""}
+                        >
+                          {field === "allotted"
+                            ? student[field] === true
+                              ? "Yes"
+                              : "No"
+                            : field === "roomNo"
+                              ? student[field]
+                                ? student[field]
+                                : "Not Available"
+                              : student[field]}
+                        </TableCell>
+                      ))}
+                      <TableCell>
+                        <EditStudentDialog student={student} />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </>
+            ) : (
+              <>
+                {students.map((student) => (
+                  <TableRow key={student._id}>
+                    {studentFields.map((field) => (
+                      <TableCell
+                        key={`${student._id}-${field}`}
+                        className={field === "allotted" ? "text-center" : ""}
+                      >
+                        {field === "allotted"
+                          ? student[field] === true
+                            ? "Yes"
+                            : "No"
+                          : field === "roomNo"
+                            ? student[field]
+                              ? student[field]
+                              : "Not Available"
+                            : student[field]}
+                      </TableCell>
+                    ))}
+                    <TableCell>
+                      <EditStudentDialog student={student} />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </>
+            )}
           </React.Fragment>
         )}
       </React.Fragment>
@@ -417,37 +519,53 @@ export default function RoomAllocationPage() {
       Object.values(categoriesData).some((category) => category.length > 0)
   );
 
+  const hasNonEmptyDataInLHSemester = (semester) => {
+    return Object.values(allotmentData.LH[semester]).some((category) => {
+      for (const student of category) {
+        if (student.roomNo != "") {
+          return true;
+        }
+      }
+    });
+  };
+
+  const hasNonEmptyDataInMHSemester = (semester) => {
+    return Object.values(allotmentData.MH[semester]).some((category) => {
+      for (const student of category) {
+        if (student.roomNo != "") {
+          return true;
+        }
+      }
+    });
+  };
+
   function StudentListing() {
     return (
       <main>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <Tabs defaultValue="all" className="gap-y-5 flex-col flex w-[80vw]">
+          <Tabs
+            className="gap-y-5 flex-col flex w-[80vw]"
+            onValueChange={(value) => {
+              setSelectedTab(value);
+            }}
+            value={selectedTab}
+          >
             <div className="flex items-center w-full">
               <TabsList>
                 <TabsTrigger value="all">All</TabsTrigger>
                 <TabsTrigger value="lh">LH</TabsTrigger>
                 <TabsTrigger value="mh">MH</TabsTrigger>
+                <TabsTrigger value="room-allotted">Room Allotted</TabsTrigger>
               </TabsList>
               <div className="ml-auto flex items-center gap-2">
-                <CSVLink
-                  data={exportData.data}
-                  headers={exportData.headers}
-                  asyncOnClick={true}
-                  onClick={(event, done) =>
-                    getExportData().then(() => {
-                      done();
-                    })
-                  }
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-7 gap-1 text-sm"
                 >
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="h-7 gap-1 text-sm"
-                  >
-                    <File className="h-3.5 w-3.5" />
-                    <span className="sr-only sm:not-sr-only">Export</span>
-                  </Button>
-                </CSVLink>
+                  <File className="h-3.5 w-3.5" />
+                  <span className="sr-only sm:not-sr-only">Export</span>
+                </Button>
               </div>
             </div>
             <TabsContent value="all">
@@ -521,14 +639,26 @@ export default function RoomAllocationPage() {
                               Object.values(categoriesData).flat().length >
                                 0 && (
                                 <React.Fragment key={semester}>
-                                  <TableRow className="bg-accent w-full text-center border-t-8">
-                                    <TableCell
-                                      colSpan={Fields.length + 1}
-                                      className="font-bold text-base"
-                                    >
-                                      {semester}
-                                    </TableCell>
-                                  </TableRow>
+                                  {selectedTab == "room-allotted" ? (
+                                    <TableRow className="bg-accent w-full text-center border-t-8">
+                                      <TableCell
+                                        colSpan={Fields.length + 1}
+                                        className="font-bold text-base"
+                                      >
+                                        {semester}
+                                      </TableCell>
+                                    </TableRow>
+                                  ) : (
+                                    <TableRow className="bg-accent w-full text-center border-t-8">
+                                      <TableCell
+                                        colSpan={Fields.length + 1}
+                                        className="font-bold text-base"
+                                      >
+                                        {semester}
+                                      </TableCell>
+                                    </TableRow>
+                                  )}
+
                                   {renderCategoryRows(
                                     categoriesData,
                                     Fields,
@@ -657,6 +787,107 @@ export default function RoomAllocationPage() {
                             No data available
                           </TableCell>
                         </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            <TabsContent value="room-allotted">
+              <Card x-chunk="dashboard-05-chunk-3">
+                <div className="flex flex-row gap-2">
+                  <CardHeader className="px-7">
+                    <CardTitle>Student Details</CardTitle>
+                  </CardHeader>
+                </div>
+                <CardContent className="">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        {Fields.map((field) => (
+                          <TableCell key={field} className="text-nowrap">
+                            {field}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {allotmentData.MH && hasNonEmptyDataInMH && (
+                        <>
+                          <TableRow className="bg-accent w-full text-center border-t-8 border-blue-200">
+                            <TableCell
+                              colSpan={Fields.length + 1}
+                              className="font-bold text-base"
+                            >
+                              MH
+                            </TableCell>
+                          </TableRow>
+                          {Object.entries(allotmentData.MH).map(
+                            ([semester, categoriesData]) =>
+                              categoriesData &&
+                              Object.values(categoriesData).flat().length >
+                                0 && (
+                                <React.Fragment key={semester}>
+                                  {selectedTab == "room-allotted" &&
+                                  hasNonEmptyDataInMHSemester(semester) ? (
+                                    <TableRow className="bg-accent w-full text-center border-t-8">
+                                      <TableCell
+                                        colSpan={Fields.length + 1}
+                                        className="font-bold text-base"
+                                      >
+                                        {semester}
+                                      </TableCell>
+                                    </TableRow>
+                                  ) : null}
+
+                                  {renderCategoryRows(
+                                    categoriesData,
+                                    Fields,
+                                    studentFields
+                                  )}
+                                </React.Fragment>
+                              )
+                          )}
+                        </>
+                      )}
+
+                      {allotmentData.LH && hasNonEmptyDataInLH && (
+                        <>
+                          <TableRow className="bg-accent w-full text-center border-t-8 border-blue-300">
+                            <TableCell
+                              colSpan={Fields.length + 1}
+                              className="font-bold text-base"
+                            >
+                              LH
+                            </TableCell>
+                          </TableRow>
+                          {Object.entries(allotmentData.LH).map(
+                            ([semester, categoriesData]) =>
+                              categoriesData &&
+                              Object.values(categoriesData).flat().length >
+                                0 && (
+                                <React.Fragment key={semester}>
+                                  {selectedTab == "room-allotted" &&
+                                  hasNonEmptyDataInLHSemester(semester) ? (
+                                    <TableRow className="bg-accent w-full text-center border-t-8">
+                                      <TableCell
+                                        colSpan={Fields.length + 1}
+                                        className="font-bold text-base"
+                                      >
+                                        {semester}
+                                      </TableCell>
+                                    </TableRow>
+                                  ) : null}
+
+                                  {renderCategoryRows(
+                                    categoriesData,
+                                    Fields,
+                                    studentFields
+                                  )}
+                                </React.Fragment>
+                              )
+                          )}
+                        </>
                       )}
                     </TableBody>
                   </Table>

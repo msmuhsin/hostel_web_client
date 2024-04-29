@@ -21,7 +21,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-
 import {
   Popover,
   PopoverContent,
@@ -73,9 +72,18 @@ const Applicationform = () => {
     { value: "MECHANICAL ENGINEERING", label: "MECHANICAL ENGINEERING" },
     { value: "CIVIL ENGINEERING", label: "CIVIL ENGINEERING" },
     { value: "BACHELOR OF ARCHITECTURE", label: "BACHELOR OF ARCHITECTURE" },
-    { value: "COMPUTER SCIENCE ENGINEERING ", label: "COMPUTER SCIENCE ENGINEERING " },
-    { value: "ELECTRONICS AND COMMUNICATION ENGINEERING  ", label: "ELECTRONICS AND COMMUNICATION ENGINEERING" },
-    { value: "ELECTRICAL AD ELECTRONIC ENGINEERING", label: "ELECTRICAL AD ELECTRONIC ENGINEERING" },
+    {
+      value: "COMPUTER SCIENCE ENGINEERING ",
+      label: "COMPUTER SCIENCE ENGINEERING ",
+    },
+    {
+      value: "ELECTRONICS AND COMMUNICATION ENGINEERING  ",
+      label: "ELECTRONICS AND COMMUNICATION ENGINEERING",
+    },
+    {
+      value: "ELECTRICAL AD ELECTRONIC ENGINEERING",
+      label: "ELECTRICAL AD ELECTRONIC ENGINEERING",
+    },
     { value: "PRODUCTION ENGINEERING", label: "PRODUCTION ENGINEERING" },
     { value: "CHEMICAL ENGINEERING", label: "CHEMICAL ENGINEERING" },
   ];

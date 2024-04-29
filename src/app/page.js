@@ -1,19 +1,23 @@
 "use client";
+
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useAuthContext } from "./context/AuthContext";
+import Loadingscreen from "./components/Loadingscreen";
 
 export default function App() {
   const router = useRouter();
-  const { user, isAuthenticated } = useAuthContext();
+  const { isAuthenticated, isloading } = useAuthContext();
 
   useEffect(() => {
-    router.push(user ? "/dashboard" : "/login");
-  }, [isAuthenticated, user]);
+    if (!isloading) {
+      if (isAuthenticated) {
+        router.push("/dashboard");
+      } else {
+        router.push("/login");
+      }
+    }
+  }, [isloading]);
 
-  return (
-    <div className="flex flex-col items-center justify-center h-screen gap-y-5">
-      <h1>Redirecting...</h1>
-    </div>
-  );
+  return <Loadingscreen />;
 }
