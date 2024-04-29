@@ -100,7 +100,7 @@ const Allotmentpage = () => {
       if (res.data.success) {
         console.log(res.data.message);
         setAllotmentSetId(res.data.AllotmentSetId);
-        toast.success("Allotment created added successfully", {
+        toast.success("Allotment created successfully", {
           position: "top-right",
         });
       } else {
@@ -180,7 +180,7 @@ const Allotmentpage = () => {
 
     return (
       <Card>
-        <Tabs defaultValue="mh" className="w-[400px]">
+        <Tabs defaultValue="mh" className="w-[420px]">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="mh">MH</TabsTrigger>
             <TabsTrigger value="lh">LH</TabsTrigger>
@@ -246,14 +246,6 @@ const Allotmentpage = () => {
           </TabsContent>
         </Tabs>
       </Card>
-    );
-  }
-
-  function AllotmentsList() {
-    return (
-      <div>
-        <AllotmentCard />
-      </div>
     );
   }
 
@@ -539,9 +531,9 @@ const Allotmentpage = () => {
           </Button>
         </CardFooter>
       </Card>
-      <div className="space-y-4 overflow-y-auto max-h-[90vh] no-scrollbar hidden sm:block">
-        <AllotmentsList />
-        <AllotmentsList />
+      <div className="space-y-4 w-auto overflow-y-auto max-h-[90vh] no-scrollbar hidden md:block">
+        <AllotmentCard />
+        <AllotmentCard />
       </div>
     </div>
   );

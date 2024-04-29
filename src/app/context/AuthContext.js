@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
   async function loadUserFromLocalStorage() {
     const token = localStorage.getItem("token");
 
-    if (!token || pathname !== "/login") {
+    if (!token) {
       router.push("/login");
       setLoading(false);
       return;
@@ -56,10 +56,10 @@ export const AuthProvider = ({ children }) => {
 
         const { data } = await api.get("/user/profile");
         if (data.user.email) {
-          setUser({ email: data.user.email });
           toast.success("Logged in successfully", {
             position: "top-right",
           });
+          setUser({ email: data.user.email });
           router.push("/dashboard");
         }
       } else if (response.data.success == false) {

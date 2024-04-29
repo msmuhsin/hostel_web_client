@@ -25,6 +25,7 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { usePathname } from "next/navigation";
 import { AllotmentProvider } from "../context/AllotmentContext.js";
+import { useAuthContext } from "../context/AuthContext";
 
 // import { Inter } from "next/font/google";
 // import "./globals.css";
@@ -100,6 +101,8 @@ function SideBar() {
 }
 
 export default function DashboardLayout({ children }) {
+  const { logout } = useAuthContext();
+
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
       <ProtectedRoute>
@@ -173,8 +176,12 @@ export default function DashboardLayout({ children }) {
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Button variant={"ghost"}>Logout</Button>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      logout();
+                    }}
+                  >
+                    Logout
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

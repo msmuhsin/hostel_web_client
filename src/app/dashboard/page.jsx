@@ -24,7 +24,7 @@ import {
   DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { File, ListFilter, Search } from "lucide-react";
+import { File, ListFilter } from "lucide-react";
 
 import {
   Dialog,
@@ -179,24 +179,27 @@ export function EditStudentDialog({
 
     onSubmit: async (values, { setSubmitting }) => {
       setSubmitting(true);
-      const res = await updateStudentData(values, student._id);
-
-      if (res.status === 200 && res.data.success) {
-        toast.success("Student data updated successfully", {
-          position: "top-right",
-        });
-
-        const updatedData = await getAllStudents();
-        setAllStudentData(updatedData.data.allStudents);
-        setHighlightedRow(student._id);
-        setTimeout(() => {
-          setHighlightedRow(null);
-        }, 3000);
-      } else {
+      try {
+        const res = await updateStudentData(values, student._id);
+        if (res.status === 200 && res.data.success) {
+          toast.success("Student data updated successfully", {
+            position: "top-right",
+          });
+          const updatedData = await getAllStudents();
+          setAllStudentData(updatedData.data.allStudents);
+          setHighlightedRow(student._id);
+          setTimeout(() => {
+            setHighlightedRow(null);
+          }, 3000);
+        } else {
+          toast.error("Error updating student data", { position: "top-right" });
+        }
+      } catch (error) {
+        console.error(error);
         toast.error("Error updating student data", { position: "top-right" });
+      } finally {
+        setSubmitting(false);
       }
-
-      setSubmitting(false);
     },
   });
 
@@ -268,7 +271,7 @@ function StudentTable({
   highlightedRow,
 }) {
   return (
-    <CardContent className="">
+    <CardContent>
       <Table>
         <TableHeader>
           <TableRow>

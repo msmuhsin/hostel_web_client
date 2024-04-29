@@ -342,22 +342,32 @@ export default function RoomAllocationPage() {
     const [studentData, setStudentData] = useState(student);
 
     const handleSubmit = async () => {
-      const data = {
-        RoomNo: studentData.roomNo,
-      };
+      try {
+        const data = {
+          RoomNo: studentData.roomNo,
+        };
+        const res = await updateStudentRoom(data, student._id);
 
-      const res = await updateStudentRoom(data, student._id);
-
-      if (res.status == 200 && res.data.success == true) {
-        toast.success("Room Updated successfully", {
-          position: "top-right",
-        });
-
-        await getAllotmentData();
-      } else {
-        toast.error("Failed to update room", {
-          position: "top-right",
-        });
+        if (res.status == 200 && res.data.success == true) {
+          toast.success("Room Updated successfully", {
+            position: "top-right",
+          });
+          await getAllotmentData();
+        } else {
+          toast.error("Failed to update room", {
+            position: "top-right",
+          });
+        }
+      } catch (error) {
+        if (error.response && error.response.status === 404) {
+          toast.error("Resource not found", {
+            position: "top-right",
+          });
+        } else {
+          toast.error("An error occurred while updating room", {
+            position: "top-right",
+          });
+        }
       }
     };
 
