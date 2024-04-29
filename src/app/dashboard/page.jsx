@@ -283,6 +283,50 @@ function StudentTable({
           </TableRow>
         </TableHeader>
         <TableBody>
+          {studentData
+            .sort((a, b) => b.score - a.score)
+            .map((student) => (
+              <TableRow
+                key={student._id}
+                className={
+                  "bg-accent" +
+                  (student._id === highlightedRow
+                    ? " bg-green-200/40 transition ease-in-out delay-150"
+                    : "")
+                }
+              >
+                <TableCell>{student.applNo}</TableCell>
+                <TableCell>{student.admNo}</TableCell>
+                <TableCell>{student.regNo}</TableCell>
+                <TableCell>{student.name}</TableCell>
+                <TableCell>{student.gender}</TableCell>
+                <TableCell>{student.dob}</TableCell>
+                <TableCell>{student.mobileNo}</TableCell>
+                <TableCell>{student.email}</TableCell>
+                <TableCell>{student.permanentAddress}</TableCell>
+                <TableCell>{student.presentAddress}</TableCell>
+                <TableCell>{student.pincode}</TableCell>
+                <TableCell>{student.distance}</TableCell>
+                <TableCell>{student.caste}</TableCell>
+                <TableCell>{student.quota}</TableCell>
+                <TableCell>{student.income}</TableCell>
+                <TableCell>{student.branch}</TableCell>
+                <TableCell>{student.sem}</TableCell>
+                <TableCell>{student.cgpa}</TableCell>
+                <TableCell>{student.score}</TableCell>
+                <TableCell>{student.allotted ? "Yes" : "No"}</TableCell>
+                <TableCell>
+                  {student.roomNo ? student.roomNo : "Not Available"}
+                </TableCell>
+                <TableCell>
+                  <EditStudentDialog
+                    student={student}
+                    setAllStudentData={setAllStudentData}
+                    setHighlightedRow={setHighlightedRow}
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
           {studentData.map((student) => (
             <TableRow
               key={student._id}

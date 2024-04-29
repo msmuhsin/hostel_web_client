@@ -29,6 +29,7 @@ import { useAuthContext } from "../context/AuthContext";
 import { useTheme } from "next-themes";
 import { Sun, Moon } from "lucide-react";
 
+
 function SideBar() {
   const pathname = usePathname();
 

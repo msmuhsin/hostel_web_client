@@ -455,6 +455,7 @@ export default function RoomAllocationPage() {
               <>
                 {students
                   .filter((student) => student.roomNo !== "")
+                  .sort((a, b) => b.score - a.score)
                   .map((student) => (
                     <TableRow key={student._id}>
                       {studentFields.map((field) => (
@@ -481,29 +482,31 @@ export default function RoomAllocationPage() {
               </>
             ) : (
               <>
-                {students.map((student) => (
-                  <TableRow key={student._id}>
-                    {studentFields.map((field) => (
-                      <TableCell
-                        key={`${student._id}-${field}`}
-                        className={field === "allotted" ? "text-center" : ""}
-                      >
-                        {field === "allotted"
-                          ? student[field] === true
-                            ? "Yes"
-                            : "No"
-                          : field === "roomNo"
-                            ? student[field]
+                {students
+                  .sort((a, b) => b.score - a.score)
+                  .map((student) => (
+                    <TableRow key={student._id}>
+                      {studentFields.map((field) => (
+                        <TableCell
+                          key={`${student._id}-${field}`}
+                          className={field === "allotted" ? "text-center" : ""}
+                        >
+                          {field === "allotted"
+                            ? student[field] === true
+                              ? "Yes"
+                              : "No"
+                            : field === "roomNo"
                               ? student[field]
-                              : "Not Available"
-                            : student[field]}
+                                ? student[field]
+                                : "Not Available"
+                              : student[field]}
+                        </TableCell>
+                      ))}
+                      <TableCell>
+                        <EditStudentDialog student={student} />
                       </TableCell>
-                    ))}
-                    <TableCell>
-                      <EditStudentDialog student={student} />
-                    </TableCell>
-                  </TableRow>
-                ))}
+                    </TableRow>
+                  ))}
               </>
             )}
           </React.Fragment>

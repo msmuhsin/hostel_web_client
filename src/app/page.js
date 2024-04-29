@@ -13,11 +13,13 @@ export default function App() {
     if (!isloading) {
       if (isAuthenticated) {
         router.push("/dashboard");
-      } else {
-        router.push("/login");
       }
-    } 
+    }
   }, [isloading]);
 
-  return <Loadingscreen />;
+  return (
+    <div className="h-screen w-screen flex items-center justify-center">
+      <h1>Governemnt Engineering College, Thrissur</h1>
+    </div>
+  );
 }
