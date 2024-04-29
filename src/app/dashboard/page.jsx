@@ -371,34 +371,45 @@ export default function Dashboard() {
   }, [selectedSemester, allStudentData, setAllStudentData]);
 
   const exportToExcel = () => {
-    let worksheet = null;
+    try {
+      let worksheet = null;
 
-    if (selectedTab === "all") {
-      worksheet = XLSX.utils.json_to_sheet(filteredStudentData);
-    } else if (selectedTab === "lh") {
-      const lhData = filteredStudentData.filter(
-        (student) => student.gender === "Female"
-      );
-      worksheet = XLSX.utils.json_to_sheet(lhData);
-    } else if (selectedTab === "mh") {
-      const mhData = filteredStudentData.filter(
-        (student) => student.gender === "Male"
-      );
-      worksheet = XLSX.utils.json_to_sheet(mhData);
+      if (selectedTab === "all") {
+        worksheet = XLSX.utils.json_to_sheet(filteredStudentData);
+      } else if (selectedTab === "lh") {
+        const lhData = filteredStudentData.filter(
+          (student) => student.gender === "Female"
+        );
+        worksheet = XLSX.utils.json_to_sheet(lhData);
+      } else if (selectedTab === "mh") {
+        const mhData = filteredStudentData.filter(
+          (student) => student.gender === "Male"
+        );
+        worksheet = XLSX.utils.json_to_sheet(mhData);
+      }
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+
+      const excelBuffer = XLSX.write(workbook, {
+        bookType: "xlsx",
+        type: "array",
+      });
+      const blob = new Blob([excelBuffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+      });
+
+      saveAs(blob, "data.xlsx");
+
+      toast.success("Data exported successfully", {
+        position: "top-right",
+      });
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to export data", {
+        position: "top-right",
+      });
     }
-
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "array",
-    });
-    const blob = new Blob([excelBuffer], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
-    });
-
-    saveAs(blob, "data.xlsx");
   };
 
   function StudentListing() {

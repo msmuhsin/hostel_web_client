@@ -16,7 +16,7 @@ export default function App() {
       } else {
         router.push("/login");
       }
-    }
+    } 
   }, [isloading]);
 
   return <Loadingscreen />;

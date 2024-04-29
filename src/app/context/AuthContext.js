@@ -12,10 +12,12 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isloading, setLoading] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
 
   async function loadUserFromLocalStorage() {
     const token = localStorage.getItem("token");
-    if (!token) {
+
+    if (!token || pathname !== "/login") {
       router.push("/login");
       setLoading(false);
       return;
@@ -37,7 +39,6 @@ export const AuthProvider = ({ children }) => {
   }
 
   useEffect(() => {
-    // Load user profile data from local storage when component mounts
     loadUserFromLocalStorage();
   }, []);
 
@@ -52,17 +53,23 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("token", response.data.token);
         api.defaults.headers.common["Authorization"] =
           `Bearer ${response.data.token}`;
-        const { data } = await api.get("/user/profile");
 
+        const { data } = await api.get("/user/profile");
         if (data.user.email) {
+          setUser({ email: data.user.email });
           toast.success("Logged in successfully", {
             position: "top-right",
           });
-          setUser({ email: data.user.email });
+          router.push("/dashboard");
         }
+      } else if (response.data.success == false) {
+        toast.error(response.data.message);
       }
     } catch (error) {
       console.error(error);
+      toast.error("Login failed please try again later..", {
+        position: "top-right",
+      });
     }
   };
 
@@ -92,12 +99,15 @@ export const useAuthContext = () => {
 
 export const ProtectedRoute = ({ children }) => {
   const pathname = usePathname();
-  const router = useRouter();
   const { isloading, isAuthenticated } = useAuthContext();
 
   if (isloading && (!isAuthenticated || pathname === "/login")) {
     return <Loadingscreen />;
   }
 
-  return isAuthenticated ? children : router.push("/login");
+  if (!isAuthenticated && pathname !== "/login") {
+    return null;
+  }
+
+  return children;
 };

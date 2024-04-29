@@ -128,28 +128,28 @@ export default function DashboardLayout({ children }) {
                       <span className="sr-only">Acme Inc</span>
                     </Link>
                     <Link
-                      href="#"
+                      href="/dashboard"
                       className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
                     >
                       <Home className="h-5 w-5" />
                       Dashboard
                     </Link>
                     <Link
-                      href="#"
+                      href="/dashboard/allotment"
                       className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
                     >
                       <Package className="h-5 w-5" />
                       Allotment
                     </Link>
                     <Link
-                      href="#"
+                      href="/dashboard/room-allocation"
                       className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
                     >
                       <Bed className="h-5 w-5" />
                       Room Allocation
                     </Link>
                     <Link
-                      href="#"
+                      href="/dashboard/report-generation"
                       className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
                     >
                       <LineChart className="h-5 w-5" />
@@ -173,7 +173,9 @@ export default function DashboardLayout({ children }) {
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>Logout</DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Button variant={"ghost"}>Logout</Button>
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </header>
