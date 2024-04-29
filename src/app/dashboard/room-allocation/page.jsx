@@ -14,6 +14,7 @@ import { Tabs, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { TabsList } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import * as XLSX from "xlsx";
 import {
   Dialog,
   DialogContent,
@@ -23,8 +24,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-
-import { File, ListFilter } from "lucide-react";
+import { saveAs } from "file-saver";
+import { File } from "lucide-react";
 import { getAllAllotedStudents, updateStudentRoom } from "@/lib/functions";
 import toast from "react-hot-toast";
 
@@ -215,20 +216,72 @@ export default function RoomAllocationPage() {
 
   const exportToExcel = () => {
     try {
+      const studentsData = [];
+
+      Object.entries(allotmentData.MH).forEach(([semester, categoriesData]) => {
+        Object.entries(categoriesData).forEach(([category, students]) => {
+          students.forEach((student) => {
+            studentsData.push({
+              "Application No": student.applNo,
+              "Admission No": student.admNo,
+              "Registration No": student.regNo,
+              Name: student.name,
+              Gender: student.gender,
+              "Mobile No": student.mobileNo,
+              Pincode: student.pincode,
+              Distance: student.distance,
+              Caste: student.caste,
+              Quota: student.quota,
+              Income: student.income,
+              Branch: student.branch,
+              Semester: student.sem,
+            });
+          });
+        });
+      });
+
+      Object.entries(allotmentData.LH).forEach(([semester, categoriesData]) => {
+        Object.entries(categoriesData).forEach(([category, students]) => {
+          students.forEach((student) => {
+            studentsData.push({
+              "Application No": student.applNo,
+              "Admission No": student.admNo,
+              "Registration No": student.regNo,
+              Name: student.name,
+              Gender: student.gender,
+              "Mobile No": student.mobileNo,
+              Pincode: student.pincode,
+              Distance: student.distance,
+              Caste: student.caste,
+              Quota: student.quota,
+              Income: student.income,
+              Branch: student.branch,
+              Semester: student.sem,
+              "Room No": student.roomNo ? student.roomNo : "Not Available",
+            });
+          });
+        });
+      });
+
       let worksheet = null;
 
       if (selectedTab === "all") {
-        worksheet = XLSX.utils.json_to_sheet(filteredStudentData);
+        worksheet = XLSX.utils.json_to_sheet(studentsData);
       } else if (selectedTab === "lh") {
-        const lhData = filteredStudentData.filter(
-          (student) => student.gender === "Female"
+        const lhData = studentsData.filter(
+          (student) => student.Gender === "Female"
         );
         worksheet = XLSX.utils.json_to_sheet(lhData);
       } else if (selectedTab === "mh") {
-        const mhData = filteredStudentData.filter(
-          (student) => student.gender === "Male"
+        const mhData = studentsData.filter(
+          (student) => student.Gender === "Male"
         );
         worksheet = XLSX.utils.json_to_sheet(mhData);
+      } else if (selectedTab === "room-allotted") {
+        const roomAllottedData = studentsData.filter(
+          (student) => student["Room No"] !== "Not Available"
+        );
+        worksheet = XLSX.utils.json_to_sheet(roomAllottedData);
       }
 
       const workbook = XLSX.utils.book_new();
@@ -243,7 +296,16 @@ export default function RoomAllocationPage() {
       });
 
       saveAs(blob, "data.xlsx");
-    } catch (error) {}
+
+      toast.success("Data exported successfully", {
+        position: "top-right",
+      });
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to export data", {
+        position: "top-right",
+      });
+    }
   };
 
   const getExportData = async () => {
@@ -519,6 +581,29 @@ export default function RoomAllocationPage() {
       Object.values(categoriesData).some((category) => category.length > 0)
   );
 
+  const hasNonEmptyDataMH_InForRoomAllotted_ForSomeSemester = () => {
+    return Object.values(allotmentData.MH).some((semestersData) => {
+      return Object.values(semestersData).some((category) => {
+        for (const student of category) {
+          if (student.roomNo != "") {
+            return true;
+          }
+        }
+      });
+    });
+  };
+  const hasNonEmptyDataLH_InForRoomAllotted_ForSomeSemester = () => {
+    return Object.values(allotmentData.LH).some((semestersData) => {
+      return Object.values(semestersData).some((category) => {
+        for (const student of category) {
+          if (student.roomNo != "") {
+            return true;
+          }
+        }
+      });
+    });
+  };
+
   const hasNonEmptyDataInLHSemester = (semester) => {
     return Object.values(allotmentData.LH[semester]).some((category) => {
       for (const student of category) {
@@ -562,6 +647,7 @@ export default function RoomAllocationPage() {
                   size="sm"
                   variant="outline"
                   className="h-7 gap-1 text-sm"
+                  onClick={exportToExcel}
                 >
                   <File className="h-3.5 w-3.5" />
                   <span className="sr-only sm:not-sr-only">Export</span>
@@ -588,6 +674,18 @@ export default function RoomAllocationPage() {
                     </TableHeader>
                     <TableBody>
                       {/* Render MH data */}
+
+                      {!hasNonEmptyDataInLH && !hasNonEmptyDataInMH && (
+                        <TableRow>
+                          <TableCell
+                            colSpan={Fields.length + 1}
+                            className="text-center"
+                          >
+                            No data available
+                          </TableCell>
+                        </TableRow>
+                      )}
+
                       {allotmentData.MH && hasNonEmptyDataInMH && (
                         <>
                           <TableRow className="bg-accent w-full text-center border-t-8 border-blue-200">
@@ -812,16 +910,30 @@ export default function RoomAllocationPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {allotmentData.MH && hasNonEmptyDataInMH && (
-                        <>
-                          <TableRow className="bg-accent w-full text-center border-t-8 border-blue-200">
-                            <TableCell
-                              colSpan={Fields.length + 1}
-                              className="font-bold text-base"
-                            >
-                              MH
+                      {selectedTab == "room-allotted" &&
+                        !hasNonEmptyDataLH_InForRoomAllotted_ForSomeSemester() &&
+                        !hasNonEmptyDataMH_InForRoomAllotted_ForSomeSemester() && (
+                          <TableRow className=" w-full text-center">
+                            <TableCell colSpan={Fields.length + 1} className="">
+                              No data available
                             </TableCell>
                           </TableRow>
+                        )}
+
+                      {allotmentData.MH && hasNonEmptyDataInMH && (
+                        <>
+                          {selectedTab == "room-allotted" &&
+                            hasNonEmptyDataInMH &&
+                            hasNonEmptyDataMH_InForRoomAllotted_ForSomeSemester() && (
+                              <TableRow className="bg-accent w-full text-center border-t-8 border-blue-200">
+                                <TableCell
+                                  colSpan={Fields.length + 1}
+                                  className="font-bold text-base"
+                                >
+                                  MH
+                                </TableCell>
+                              </TableRow>
+                            )}
                           {Object.entries(allotmentData.MH).map(
                             ([semester, categoriesData]) =>
                               categoriesData &&
@@ -853,14 +965,18 @@ export default function RoomAllocationPage() {
 
                       {allotmentData.LH && hasNonEmptyDataInLH && (
                         <>
-                          <TableRow className="bg-accent w-full text-center border-t-8 border-blue-300">
-                            <TableCell
-                              colSpan={Fields.length + 1}
-                              className="font-bold text-base"
-                            >
-                              LH
-                            </TableCell>
-                          </TableRow>
+                          {selectedTab == "room-allotted" &&
+                            hasNonEmptyDataInLH &&
+                            hasNonEmptyDataLH_InForRoomAllotted_ForSomeSemester() && (
+                              <TableRow className="bg-accent w-full text-center border-t-8 border-blue-200">
+                                <TableCell
+                                  colSpan={Fields.length + 1}
+                                  className="font-bold text-base"
+                                >
+                                  LH
+                                </TableCell>
+                              </TableRow>
+                            )}
                           {Object.entries(allotmentData.LH).map(
                             ([semester, categoriesData]) =>
                               categoriesData &&
