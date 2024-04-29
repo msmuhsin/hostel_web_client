@@ -722,7 +722,7 @@ export default function RoomAllocationPage() {
             </Card>
           </TabsContent>
           <TabsContent value="mh">
-            <Card x-chunk="dashboard-05-chunk-3">
+            <Card x-chunk="dashboard-05-chunk-3" className="sm:w-[90vw]">
               <div className="flex flex-row gap-2">
                 <CardHeader className="px-7">
                   <CardTitle>Student Details</CardTitle>
@@ -781,7 +781,7 @@ export default function RoomAllocationPage() {
             </Card>
           </TabsContent>
           <TabsContent value="lh">
-            <Card x-chunk="dashboard-05-chunk-3">
+            <Card x-chunk="dashboard-05-chunk-3" className="sm:w-[90vw]">
               <div className="flex flex-row gap-2">
                 <CardHeader className="px-7">
                   <CardTitle>Student Details</CardTitle>
@@ -839,7 +839,7 @@ export default function RoomAllocationPage() {
             </Card>
           </TabsContent>
           <TabsContent value="room-allotted">
-            <Card x-chunk="dashboard-05-chunk-3">
+            <Card x-chunk="dashboard-05-chunk-3" className="sm:w-[90vw]">
               <div className="flex flex-row gap-2">
                 <CardHeader className="px-7">
                   <CardTitle>Student Details</CardTitle>
