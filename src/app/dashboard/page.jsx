@@ -293,26 +293,26 @@ function StudentTable({
                   : "")
               }
             >
-              <TableCell>{student.applNo}</TableCell>
-              <TableCell>{student.admNo}</TableCell>
-              <TableCell>{student.regNo}</TableCell>
-              <TableCell>{student.name}</TableCell>
-              <TableCell>{student.gender}</TableCell>
-              <TableCell>{student.dob}</TableCell>
-              <TableCell>{student.mobileNo}</TableCell>
-              <TableCell>{student.email}</TableCell>
-              <TableCell>{student.permanentAddress}</TableCell>
-              <TableCell>{student.presentAddress}</TableCell>
-              <TableCell>{student.pincode}</TableCell>
-              <TableCell>{student.distance}</TableCell>
-              <TableCell>{student.caste}</TableCell>
-              <TableCell>{student.quota}</TableCell>
-              <TableCell>{student.income}</TableCell>
-              <TableCell>{student.branch}</TableCell>
-              <TableCell>{student.sem}</TableCell>
-              <TableCell>{student.cgpa}</TableCell>
-              <TableCell>{student.score}</TableCell>
-              <TableCell>{student.allotted ? "Yes" : "No"}</TableCell>
+              <TableCell className="text-xl">{student.applNo}</TableCell>
+              <TableCell className="text-xl">{student.admNo}</TableCell>
+              <TableCell className="text-xl">{student.regNo}</TableCell>
+              <TableCell className="text-xl">{student.name}</TableCell>
+              <TableCell className="text-xl">{student.gender}</TableCell>
+              <TableCell className="text-xl">{student.dob}</TableCell>
+              <TableCell className="text-xl">{student.mobileNo}</TableCell>
+              <TableCell className="text-xl">{student.email}</TableCell>
+              <TableCell className="text-xl">{student.permanentAddress}</TableCell>
+              <TableCell className="text-xl">{student.presentAddress}</TableCell>
+              <TableCell className="text-xl">{student.pincode}</TableCell>
+              <TableCell className="text-xl">{student.distance}</TableCell>
+              <TableCell className="text-xl">{student.caste}</TableCell>
+              <TableCell className="text-xl">{student.quota}</TableCell>
+              <TableCell className="text-xl">{student.income}</TableCell>
+              <TableCell className="text-xl">{student.branch}</TableCell>
+              <TableCell className="text-xl">{student.sem}</TableCell>
+              <TableCell className="text-xl">{student.cgpa}</TableCell>
+              <TableCell className="text-xl">{student.score}</TableCell>
+              <TableCell className="text-xl">{student.allotted ? "Yes" : "No"}</TableCell>
               <TableCell>
                 {student.roomNo ? student.roomNo : "Not Available"}
               </TableCell>
@@ -467,8 +467,8 @@ export default function Dashboard() {
             </Button>
           </div>
         </div>
-        <TabsContent value="all">
-          <Card x-chunk="dashboard-05-chunk-3">
+        <TabsContent value="all" >
+          <Card x-chunk="dashboard-05-chunk-3" >
             <div className="flex flex-row gap-2">
               <CardHeader className="px-7">
                 <CardTitle>Student Details</CardTitle>
@@ -486,6 +486,7 @@ export default function Dashboard() {
               </form> */}
             </div>
             <StudentTable
+            className="bg-black"
               {...{
                 studentData: tableData.all,
                 setAllStudentData,
@@ -501,8 +502,9 @@ export default function Dashboard() {
               <CardHeader className="px-7">
                 <CardTitle>Student Details</CardTitle>
               </CardHeader>
-            </div>
+            </div >
             <StudentTable
+            
               {...{
                 studentData: tableData.mh,
                 setAllStudentData,

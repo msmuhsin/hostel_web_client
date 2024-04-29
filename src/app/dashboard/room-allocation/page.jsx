@@ -578,10 +578,10 @@ export default function RoomAllocationPage() {
           >
             <div className="flex items-center w-full">
               <TabsList>
-                <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="lh">LH</TabsTrigger>
-                <TabsTrigger value="mh">MH</TabsTrigger>
-                <TabsTrigger value="room-allotted">Room Allotted</TabsTrigger>
+                <TabsTrigger value="all" className =" text-xl" >All</TabsTrigger>
+                <TabsTrigger value="lh"  className =" text-xl" >LH</TabsTrigger>
+                <TabsTrigger value="mh"  className =" text-xl" >MH</TabsTrigger>
+                <TabsTrigger value="room-allotted"  className =" text-xl" >Room Allotted</TabsTrigger>
               </TabsList>
               <div className="ml-auto flex items-center gap-2">
                 <Button
