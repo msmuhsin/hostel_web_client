@@ -21,9 +21,9 @@ export default function App() {
 
   return (
     <div className="h-screen w-screen flex items-center justify-center absolute overflow-hidden">
-      <div className="flex flex-col z-20 text-center items-center mt-20 text-">
+      <div className="flex flex-col z-20 text-center items-center mt-20 text-white">
         <h1 className="text-4xl font-extrabold mb-4">
-          Welcome to Engineering College Thrissur
+          Welcome to  Government Engineering College Thrissur
         </h1>
         <p className="text-lg mb-4">HOSTEL MANAGEMENT SYSTEM</p>
         <p className="text-lg mb-8">

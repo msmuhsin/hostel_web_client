@@ -320,7 +320,7 @@ const Applicationform = () => {
                 <input
                   type="radio"
                   name="Gender"
-                  value="Femal"
+                  value="Female"
                   className="mr-1"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
